@@ -1,0 +1,3 @@
+server1.com
+192.168.10.10
+srv3.mydomain.com
