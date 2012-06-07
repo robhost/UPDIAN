@@ -1,0 +1,21 @@
+#/bin/bash
+
+# Updian Restriced Shell
+
+if [[ -z $SSH_ORIGINAL_COMMAND ]]
+then
+	echo "Updian Restriced Shell: Interactive shell not allowed"
+	exit 1
+fi
+
+case $SSH_ORIGINAL_COMMAND in
+	"apt-get update -qq" | "apt-get upgrade -s" \
+	| "export DEBIAN_FRONTEND=noninteractive && apt-get upgrade -y" \
+	| "apt-get autoclean" | "checkrestart")
+		bash -c "$SSH_ORIGINAL_COMMAND"
+		;;
+	*)
+		echo "Updian Restriced Shell: Command not allowed: $SSH_ORIGINAL_COMMAND"
+		exit 2
+		;;
+esac
