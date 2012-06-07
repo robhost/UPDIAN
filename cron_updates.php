@@ -49,16 +49,16 @@ while (false !== ($file = readdir($dir))) {
 
     // set env-var DEBIAN_FRONTEND=noninteractive 
     // if we want to keep our existing cfg-files
-    if($keep_cfgs)  $upd = "ssh -p $ssh_port $file 'export DEBIAN_FRONTEND=noninteractive && ";
-    else            $upd = "ssh -p $ssh_port $file '";  
+    if($keep_cfgs)  $upd = "ssh -l root -p $ssh_port $file 'export DEBIAN_FRONTEND=noninteractive && ";
+    else            $upd = "ssh -l root -p $ssh_port $file '";  
 
     $upd.= "apt-get upgrade -y'";
     $done = `$upd`; 
-    exec("ssh -p $ssh_port $file apt-get autoclean");
+    exec("ssh -l root -p $ssh_port $file apt-get autoclean");
     $log.= "$file (".date("M d, H:i")."):\n\n$done\n\n####################\n\n";
 
     // check if programs need to be restarted with checkrestart (deb-package: debian-goodies)
-    $restart = "ssh -p $ssh_port $file checkrestart";
+    $restart = "ssh -l root -p $ssh_port $file checkrestart";
     $rs_out  = `$restart`;
     if( trim($rs_out) != "Found 0 processes using old versions of upgraded files") {
 
@@ -109,7 +109,7 @@ if( file_exists($data_dir."multissh.txt") ) {
 #debug
 echo $srv[$i][0]."\n";
             $log.= $srv[$i][0]." ";
-            $do  = "ssh ".$srv[$i][0]." 'export DEBIAN_FRONTEND=noninteractive && $cmd'";
+            $do  = "ssh -l root ".$srv[$i][0]." 'export DEBIAN_FRONTEND=noninteractive && $cmd'";
             $res = `$do`;
             $log.= "$file (".date("M d, H:i")."):\n\n$res\n\n####################\n\n";
     }
