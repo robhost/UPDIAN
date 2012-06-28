@@ -1,0 +1,22 @@
+UPDIAN - UpdateDebian 
+
+Minimalistic Debian Package Upgrade Tool with Web-Frontend by Robert Klikics, RobHost GmbH [rk@robhost.de], 2007-2011
+
+v0.4
+
+- basic yum support added
+- bugfixes
+
+
+v0.3
+
+- other SSH ports then 22 can be set (hostname:port in server list)
+- serverlist, queue and logs are now sorted
+- polished (a litte bit^^) interface (table-view and such things)
+- if you've installed "debian-goodies" package on remote server updian now checks if 
+  running services needed to be restarted after the update process ('checkrestart' is called on the remote machine)
+    |_ these services are marked yellow in the "Logs" view
+
+
+
+
