@@ -1,0 +1,6 @@
+order deny,allow
+# default user is admin:admin
+AuthUserFile /var/www/updian/.htpasswd
+AuthType Basic
+AuthName "Updian"
+require valid-user    

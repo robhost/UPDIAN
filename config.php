@@ -32,10 +32,9 @@ $keep_cfgs = true;  /* true or false. if true, Updian ALWAYS KEEPS YOUR EXISTING
 // uri to you installation (for hyperlink in mails i.e.)
 $updian_uri= "http://192.168.0.254/updian/";
 
-
 // mail options
-$mail_active = true;                                                             // send infomails: true|false
-$mail_to     = "support@robhost.de";                 // To: for infomails, should be your valid email (mail1[,mail2])
-$mail_from   = "updian@robhost.de";                                  // From: for mail, default: updian@yourhost.tld, have a look at "hostname -f"
+$mail_active = true;                    // send infomails: true|false
+$mail_to     = "server@domain.tld";     // To: for infomails, should be your valid email (mail1[,mail2])
+$mail_from   = "updian@domain.tld";     // From: for mail, default: updian@yourhost.tld, have a look at "hostname -f"
 
 ?>

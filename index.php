@@ -45,7 +45,7 @@ A:hover     {text-decoration: underline; color: dodgerblue}
 <body>
 <h1>Updian - UpdateDebian v0.4</h1>
 <h4>by <a href="http://www.robhost.de/updian/">RobHost GmbH</a>, 2007-<?=date(Y)?></h4>
-<hr>
+hr>
 <a href="index.php">Home</a> &nbsp;-&nbsp; <a href="index.php?act=queue">Queue</a> &nbsp;-&nbsp; <a href='index.php?act=servers'>Servers</a> &nbsp;-&nbsp; <a href='index.php?act=logs'>Logs</a> &nbsp;-&nbsp; <a href="index.php?act=ssh">Multi-SSH</a>
 <hr>
 <?php
