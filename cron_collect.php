@@ -49,14 +49,14 @@ for($i = 0; $i < count($srv); $i++ ) {
     // apt or yum?
     if($engine == 'yum') {
 	
-	$upd = "ssh -p ".$port." ".$srv[$i][0]." yum check-update -q";
+	$upd = "ssh -l root -p ".$port." ".$srv[$i][0]." yum check-update -q";
 
     } else {
 	
 	// apt
-    	exec("ssh -p ".$port." ".$srv[$i][0]." apt-get autoclean -y");
-    	system("ssh -p ".$port." ".$srv[$i][0]." apt-get update -qq");  // qq = quiet
-    	$upd = "ssh -p ".$port." ".$srv[$i][0]." apt-get upgrade -s | grep Inst"; // s = simulate!
+    	exec("ssh -l root -p ".$port." ".$srv[$i][0]." apt-get autoclean -y");
+    	system("ssh -l root -p ".$port." ".$srv[$i][0]." apt-get update -qq");  // qq = quiet
+    	$upd = "ssh -l root -p ".$port." ".$srv[$i][0]." apt-get upgrade -s | grep Inst"; // s = simulate!
     }
 
     $res = `$upd`;

@@ -63,7 +63,7 @@ echo "Host: $file, Port: $ssh_port, Engine: $engine\n";
 if($engine == 'yum') {
 
 // yum
-$upd = "ssh -p $ssh_port $file '";
+$upd = "ssh -l root -p $ssh_port $file '";
 $upd.= "yum update -y --skip-broken'";
 $done = `$upd`;
 $log.= "$file (".date("M d, H:i")."):\n\n$done\n\n####################\n\n";        
@@ -80,11 +80,11 @@ $log.= "$file (".date("M d, H:i")."):\n\n$done\n\n####################\n\n";
 
     $upd.= "apt-get upgrade -y'";
     $done = `$upd`; 
-    exec("ssh -p $ssh_port $file apt-get autoclean");
+    exec("ssh -l root -p $ssh_port $file apt-get autoclean");
     $log.= "$file (".date("M d, H:i")."):\n\n$done\n\n####################\n\n";
 
     // check if programs need to be restarted with checkrestart (deb-package: debian-goodies)
-    $restart = "ssh -p $ssh_port $file checkrestart";
+    $restart = "ssh -l root -p $ssh_port $file checkrestart";
     $rs_out  = `$restart`;
     if( trim($rs_out) != "Found 0 processes using old versions of upgraded files") {
 
