@@ -36,7 +36,7 @@ MULTI-SSH
 
 With Multi-SSH (introduced in v0.2) you can run any shell-command on ALL your servers via UPDIAN. 
 Very helpful for "apt-get dist-upgrade" or such things. The command is issued on the next cron_updates.php run.
-
+Note that this does not work if you are using updian-rsh (see below).
 
 *******************
 REQUIREMENTS
@@ -89,11 +89,30 @@ lsof -n | egrep -i "(DEL|inode)"
 Updian writes the output from 'checkrestart' to <server>_checkrestart.log (see "Logs" in webfrontend).
 
 
+*******************
+UPDIAN RESTRICED SHELL - updian-rsh
 
+Updian's default mode of operation gives the updian server unlimited root access
+to all servers.
+updian-rsh is a shell script that can be used with ssh's forced command feature
+to limit the commands updian can execute over ssh. Then, even if the updian
+server is compromised, the intruder can only do one thing with your other
+servers: Update them. This means that the multi-ssh feature is also restriced to
+the commands allowed by updian-rsh.
 
+To use it, copy updian-rsh to the machines you want to update, for example to
+/usr/local/bin.
+Prefix the line in /root/.ssh/authorized_keys with
 
+    command="/usr/local/bin/updian-rsh" 
 
+so that it looks like this:
 
- 
+    command="/usr/local/bin/updian-rsh" ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEA8Yf[...]
 
+Now when you try to connect to that server with "ssh root@remote_server"
+you should get the message
 
+    Updian Restriced Shell: Interactive shell not allowed
+
+and the connection is closed.
