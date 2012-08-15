@@ -11,7 +11,8 @@ fi
 case $SSH_ORIGINAL_COMMAND in
 	"apt-get update -qq" | "apt-get upgrade -s" \
 	| "export DEBIAN_FRONTEND=noninteractive && apt-get upgrade -y" \
-	| "apt-get autoclean" | "checkrestart")
+	| "apt-get autoclean" | "checkrestart" \
+	| "yum check-update -q" | "yum update -y --skip-broken")
 		bash -c "$SSH_ORIGINAL_COMMAND"
 		;;
 	*)
