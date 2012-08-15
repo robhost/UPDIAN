@@ -21,6 +21,10 @@ $dir = opendir($todo_dir);
 $cnt = 0;
 $srv = array();
 
+// Prevent multiple running instances by flock'ing server.txt. Lock is released on exit.
+$lockfd=fopen($cfg_file,"r");
+flock($lockfd, LOCK_EX | LOCK_NB) || die("Could not get lock, another instance running?\n");
+
 // get servers first to get different port and other possible settings 
 foreach(file($cfg_file) as $line) {
 
