@@ -77,8 +77,8 @@ $log.= "$file (".date("M d, H:i")."):\n\n$done\n\n####################\n\n";
     // apt
     // set env-var DEBIAN_FRONTEND=noninteractive 
     // if we want to keep our existing cfg-files
-    if($keep_cfgs)  $upd = "ssh -p $ssh_port $file 'export DEBIAN_FRONTEND=noninteractive && ";
-    else            $upd = "ssh -p $ssh_port $file '";  
+    if($keep_cfgs)  $upd = "ssh -l root -p $ssh_port $file 'export DEBIAN_FRONTEND=noninteractive && ";
+    else            $upd = "ssh -l root -p $ssh_port $file '";  
 
     $upd.= "apt-get upgrade -y'";
     $done = `$upd`; 
