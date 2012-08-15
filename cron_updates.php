@@ -47,9 +47,11 @@ $srv[$srv_tmp[0]]['engine'] = $engine;
 // loop through all files & update servers
 while (false !== ($file = readdir($dir))) {
 
-$log = "";
+// Ignore hidden files (for example the .gitignore file or "." and "..")
+if(preg_match('/^\./',$file))
+    continue;
 
-if ($file == "." || $file == "..")  continue;
+$log = "";
 
 $file = preg_replace("/\.txt$/", "", $file);
 $ssh_port = $srv[$file]['port'];  // get SSH port

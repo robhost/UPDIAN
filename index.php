@@ -143,7 +143,10 @@ if($_GET[act] == "add") {
         $dir = opendir($data_dir);
         while (false !== ($file = readdir($dir))) {
 
-            if ($file == "." || $file == "..")  continue;
+            // Ignore hidden files (for example the .gitignore file or "." and "..")
+            if(preg_match('/^\./',$file))
+                continue;
+
             if($file == "statfile")             continue;
             if($file == "statfile_upd")         continue;
 
@@ -168,7 +171,10 @@ if($_GET[act] == "logs") {
 
             while (false !== ($file = readdir($dir))) {
 
-                if ($file == "." || $file == "..")  continue;
+                // Ignore hidden files (for example the .gitignore file or "." and "..")
+                if(preg_match('/^\./',$file))
+                    continue;
+
                 @unlink($log_path.$file);
             }
 
@@ -188,7 +194,9 @@ if($_GET[act] == "logs") {
 
     while (false !== ($file = readdir($dir))) {
 
-        if ($file == "." || $file == "..")  continue;
+        // Ignore hidden files (for example the .gitignore file or "." and "..")
+        if(preg_match('/^\./',$file))
+            continue;
 
         $logs[] = $file;
         $cnt++;   
@@ -234,7 +242,10 @@ if($_GET[act] == "queue") {
 
     while (false !== ($file = readdir($dir))) {
 
-        if ($file == "." || $file == "..")  continue;
+        // Ignore hidden files (for example the .gitignore file or "." and "..")
+        if(preg_match('/^\./',$file))
+            continue;
+
         $file = preg_replace("/\.txt$/", "", $file);
     
         $que[] = "<tr onmouseover=\"this.className='greyTR';\" onmouseout=\"this.className='whiteTR';\"><td>" . $file."</td><td>queued: ".date("M d, H:i", filemtime($todo_dir.$file.".txt"))."</td><td align='right'><a href='javascript:ask(\"index.php?act=queue&del=$file\", \"Delete $file from queue?\")'>delete</a></td></tr>";
@@ -268,7 +279,10 @@ echo "<table width='600' cellspacing='0' cellpadding='2'>\n";
 // get info for all servers from datadir
 while (false !== ($file = readdir($dir))) {
     
-    if ($file == "." || $file == "..")  continue;
+    // Ignore hidden files (for example the .gitignore file or "." and "..")
+    if(preg_match('/^\./',$file))
+        continue;
+
     if($file == "statfile")             continue;
     if($file == "statfile_upd")         continue;
     if($file == "multissh.txt")         continue;
