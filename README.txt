@@ -65,7 +65,7 @@ INSTALLATION
 - Edit the .htpasswd file and change user/password (htpasswd .htpasswd updian)
 - Make sure the /updian - folder is writeable by your webserver-user (www-data or something)
 - Open http://yoururl.tld/path/to/updian/ in your web browser
-- Klick on "Servers" and add your servers with a FQDN per line
+- Klick on "Servers" and add your servers with a hostname (or IP) per line. For yum servers, the format is hostname:22:yum.
 - For test purposes run cron_collect.php manually with "php cron_collect.php" on your shell
     |_ You should see some output and (if there are updates) your should see the servers/updates on the webinterface
 - Run cron_updates.php if you want Updian to update your choosed server (from the queue)
