@@ -21,6 +21,10 @@ $dir = opendir($todo_dir);
 $cnt = 0;
 $srv = array();
 
+// Prevent multiple running instances by flock'ing server.txt. Lock is released on exit.
+$lockfd=fopen($cfg_file,"r");
+flock($lockfd, LOCK_EX | LOCK_NB) || die("Could not get lock, another instance running?\n");
+
 // get servers first to get different port and other possible settings 
 foreach(file($cfg_file) as $line) {
 
@@ -47,9 +51,11 @@ $srv[$srv_tmp[0]]['engine'] = $engine;
 // loop through all files & update servers
 while (false !== ($file = readdir($dir))) {
 
-$log = "";
+// Ignore hidden files (for example the .gitignore file or "." and "..")
+if(preg_match('/^\./',$file))
+    continue;
 
-if ($file == "." || $file == "..")  continue;
+$log = "";
 
 $file = preg_replace("/\.txt$/", "", $file);
 $ssh_port = $srv[$file]['port'];  // get SSH port
@@ -63,7 +69,7 @@ echo "Host: $file, Port: $ssh_port, Engine: $engine\n";
 if($engine == 'yum') {
 
 // yum
-$upd = "ssh -p $ssh_port $file '";
+$upd = "ssh -l root -p $ssh_port $file '";
 $upd.= "yum update -y --skip-broken'";
 $done = `$upd`;
 $log.= "$file (".date("M d, H:i")."):\n\n$done\n\n####################\n\n";        
@@ -75,16 +81,16 @@ $log.= "$file (".date("M d, H:i")."):\n\n$done\n\n####################\n\n";
     // apt
     // set env-var DEBIAN_FRONTEND=noninteractive 
     // if we want to keep our existing cfg-files
-    if($keep_cfgs)  $upd = "ssh -p $ssh_port $file 'export DEBIAN_FRONTEND=noninteractive && ";
-    else            $upd = "ssh -p $ssh_port $file '";  
+    if($keep_cfgs)  $upd = "ssh -l root -p $ssh_port $file 'export DEBIAN_FRONTEND=noninteractive && ";
+    else            $upd = "ssh -l root -p $ssh_port $file '";  
 
     $upd.= "apt-get upgrade -y'";
     $done = `$upd`; 
-    exec("ssh -p $ssh_port $file apt-get autoclean");
+    exec("ssh -l root -p $ssh_port $file apt-get autoclean");
     $log.= "$file (".date("M d, H:i")."):\n\n$done\n\n####################\n\n";
 
     // check if programs need to be restarted with checkrestart (deb-package: debian-goodies)
-    $restart = "ssh -p $ssh_port $file checkrestart";
+    $restart = "ssh -l root -p $ssh_port $file checkrestart";
     $rs_out  = `$restart`;
     if( trim($rs_out) != "Found 0 processes using old versions of upgraded files") {
 
