@@ -84,7 +84,7 @@ $log.= "$file (".date("M d, H:i")."):\n\n$done\n\n####################\n\n";
     if($keep_cfgs)  $upd = "ssh -l root -p $ssh_port $file 'export DEBIAN_FRONTEND=noninteractive && ";
     else            $upd = "ssh -l root -p $ssh_port $file '";  
 
-    $upd.= "apt-get upgrade -y'";
+    $upd.= "apt-get upgrade -y --force-yes'";
     $done = `$upd`; 
     exec("ssh -l root -p $ssh_port $file apt-get autoclean");
     $log.= "$file (".date("M d, H:i")."):\n\n$done\n\n####################\n\n";
