@@ -1,9 +1,0 @@
-order deny,allow
-deny from all
-# only vpn
-allow from 10.0.0.
-allow from 192.168.
-AuthUserFile /var/www/updian/.htpasswd
-AuthType Basic
-AuthName "Updian"
-require valid-user    
