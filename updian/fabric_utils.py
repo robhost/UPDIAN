@@ -22,12 +22,6 @@
 
 import fabric.api
 
-def backend_mapping_generator(serverlist):
-    '''Generator yielding pairs of server hostnames and backends.'''
-    for server in serverlist:
-        yield (server.hostname,
-               server.backend or server.defaults['backend'])
-
 class UnknownBackendError(Exception):
     '''Raised when an unsupported backend is used.'''
     def __init__(self, backend):

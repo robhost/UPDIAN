@@ -50,7 +50,7 @@ import time
 from fabric.api import parallel, execute, env, settings, hide
 
 from .. import config
-from ..fabric_utils import backend_mapping_generator, make_host_list, update_check
+from ..fabric_utils import make_host_list, update_check
 
 __all__ = ['update_mail_subject', 'update_mail_text', 'collect_update_data']
 
@@ -67,12 +67,16 @@ updian on base
 '''
 
 @parallel(pool_size=config.concurrency)
-def check_for_update(backend_mapping):
+def check_for_update(metadata_mapping):
     '''Fabric task that checks hosts for pending updates.'''
-    backend = backend_mapping[env.host]
+    metadata = metadata_mapping[env.host]
+    backend = metadata.backend or metadata.defaults['backend']
     use_sudo = (env.user != 'root')
 
-    print('Query: %s, Port: %s, Engine: %s' % (env.host, env.port, backend))
+    env.gateway = metadata.gateway or metadata.defaults['gateway']
+
+    print('Query: %s, Port: %s, Engine: %s, Gateway: %s' %
+          (env.host, env.port, backend, env.gateway))
 
     env.shell = '/bin/bash -c'
 
@@ -102,11 +106,11 @@ def collect_update_data(serverlist):
     '''
     clear_datadir()
 
-    backend_mapping = dict(backend_mapping_generator(serverlist))
+    metadata_mapping = dict(((s.hostname, s) for s in serverlist))
 
     with hide('everything'):
         updates = execute(check_for_update,
-                          backend_mapping,
+                          metadata_mapping,
                           hosts=make_host_list(serverlist))
 
     statfile = os.path.join(config.data_dir, 'statfile')

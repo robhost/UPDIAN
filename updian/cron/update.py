@@ -34,12 +34,16 @@ from ..fabric_utils import *
 __all__ = ['execute_queued_updates']
 
 @parallel(pool_size=config.concurrency)
-def do_update(backend_mapping):
+def do_update(metadata_mapping):
     '''Fabric task that updates packages and logs the output.'''
-    backend = backend_mapping[env.host]
+    metadata = metadata_mapping[env.host]
+    backend = metadata.backend or metadata.defaults['backend']
     use_sudo = (env.user != 'root')
 
-    print('Host: %s, Port: %s, Engine: %s' % (env.host, env.port, backend))
+    env.gateway = metadata.gateway or metadata.defaults['gateway']
+
+    print('Host: %s, Port: %s, Engine: %s, Gateway: %s' %
+          (env.host, env.port, backend, env.gateway))
 
     env.shell = '/bin/bash -c'
 
@@ -82,11 +86,11 @@ def execute_queued_updates(serverlist):
         return
 
     serverlist = filter(lambda s: s.hostname in host_queue, serverlist)
-    backend_mapping = dict(backend_mapping_generator(serverlist))
+    metadata_mapping = dict(((s.hostname, s) for s in serverlist))
 
     with hide('everything'):
         return_vals = execute(do_update,
-                              backend_mapping,
+                              metadata_mapping,
                               hosts=make_host_list(serverlist))
 
     statfile = os.path.join(config.data_dir, 'statfile_upd')

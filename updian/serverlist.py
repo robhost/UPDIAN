@@ -66,9 +66,11 @@ class Server(object):
         'user': 'root',
         'port': 22,
         'backend': 'apt',
+        'gateway': None,
     }
 
-    def __init__(self, hostname, port=None, backend=None, user=None):
+    def __init__(self, hostname, port=None, backend=None, user=None,
+                 gateway=None):
         if port and type(port) != types.IntType:
             port = int(port)
 
@@ -81,10 +83,14 @@ class Server(object):
         if user == self.defaults['user']:
             user = None
 
+        if gateway == self.defaults['gateway']:
+            gateway = None
+
         self.hostname = hostname
         self.port = port
         self.backend = backend
         self.user = user
+        self.gateway = gateway
 
     def __iter__(self):
         for attr in self.__dict__:
