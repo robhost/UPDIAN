@@ -29,9 +29,9 @@ import sys
 import types
 
 FMT_CSV = 'format_csv'
-FMT_PYTHON_V1 = 'format_python_v1'
+FMT_JSON = 'format_json'
 
-available_formats = [FMT_CSV, FMT_PYTHON_V1]
+available_formats = [FMT_CSV, FMT_JSON]
 
 class ServerList(list):
     '''Class providing a list interface for updian's server list.
@@ -143,7 +143,7 @@ def _read_from_file_format_csv(fp):
 
     return slist
 
-def _read_from_file_format_python_v1(fp):
+def _read_from_file_format_json(fp):
     def list_entry_hook(dct):
         return Server(**dct)
 
