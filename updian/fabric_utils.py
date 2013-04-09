@@ -45,8 +45,10 @@ def update_check(backend, use_sudo=False):
 
     if backend == 'apt':
         driver('DEBIAN_FRONTEND=noninteractive apt-get update -qq', quiet=True)
-        ret = driver('DEBIAN_FRONTEND=noninteractive apt-get upgrade -s | '
-                     'grep Inst')
+        with fabric.api.settings(ok_ret_codes=[0, 1]):
+            ret = driver('DEBIAN_FRONTEND=noninteractive '
+                         'apt-get upgrade -s | '
+                         'grep Inst')
     elif backend == 'yum':
         with fabric.api.settings(ok_ret_codes=[0, 100]):
             ret = driver('yum check-update -q')
