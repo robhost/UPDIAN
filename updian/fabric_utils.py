@@ -48,7 +48,7 @@ def update_check(backend, use_sudo=False):
         ret = driver('DEBIAN_FRONTEND=noninteractive apt-get upgrade -s | '
                      'grep Inst')
     elif backend == 'yum':
-        with settings(ok_ret_codes=[0, 100]):
+        with fabric.api.settings(ok_ret_codes=[0, 100]):
             ret = driver('yum check-update -q')
     else:
         raise UnknownBackendError(backend)

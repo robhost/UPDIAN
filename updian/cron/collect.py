@@ -74,6 +74,8 @@ def check_for_update(backend_mapping):
 
     print('Query: %s, Port: %s, Engine: %s' % (env.host, env.port, backend))
 
+    env.shell = '/bin/bash -c'
+
     s = update_check(backend, use_sudo)
     result = s.stdout.replace('\r', '')
 

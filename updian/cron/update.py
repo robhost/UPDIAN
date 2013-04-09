@@ -41,6 +41,8 @@ def do_update(backend_mapping):
 
     print('Host: %s, Port: %s, Engine: %s' % (env.host, env.port, backend))
 
+    env.shell = '/bin/bash -c'
+
     s = upgrade_packages(backend, use_sudo)
 
     log_entry = '{host} ({date}):\n\n{output}\n\n####################\n\n'
