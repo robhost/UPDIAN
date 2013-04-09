@@ -37,4 +37,7 @@ $mail_active = true;                    // send infomails: true|false
 $mail_to     = "server@domain.tld";     // To: for infomails, should be your valid email (mail1[,mail2])
 $mail_from   = "updian@domain.tld";     // From: for mail, default: updian@yourhost.tld, have a look at "hostname -f"
 
+// concurrency options (Python backend)
+$concurrency = 20;
+
 ?>

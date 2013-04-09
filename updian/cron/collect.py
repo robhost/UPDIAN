@@ -66,7 +66,7 @@ Regards,
 updian on base
 '''
 
-@parallel(pool_size=10)
+@parallel(pool_size=config.concurrency)
 def check_for_update(backend_mapping):
     '''Fabric task that checks hosts for pending updates.'''
     backend = backend_mapping[env.host]

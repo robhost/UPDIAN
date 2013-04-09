@@ -32,6 +32,7 @@ updian_uri = 'http://192.168.0.254/updian'
 mail_active = True
 mail_to = 'root@localhost'
 mail_from = 'updian@localhost'
+concurrency = 20
 
 _TRANSLATION_TABLE = {
     '$cfg_file': 'serverlist_file',
@@ -45,7 +46,7 @@ def update(option_dict):
     (starting with '$'). Those legacy keys will be automatically
     converted to the appropriate option name.
     Quotes and double quotes are automatically stripped from options
-    of type string and booleans given as string will be converted.
+    of type string.
 
     '''
     if not option_dict:
@@ -65,7 +66,7 @@ def update(option_dict):
             if option.startswith('$'):
                 option = option[1:]
 
-        # raise an error if we try to set an unkown option
+        # raise an error if we try to set an unknown option
         if option not in module_vars:
             raise NameError('Unknown configuration option "%s".' % option)
 
@@ -76,6 +77,9 @@ def update(option_dict):
                 value = True
             else:
                 value = False
+        elif (type(module_vars[option]) is types.IntType and
+              type(value) is types.StringType):
+            value = int(value)
         elif type(module_vars[option]) is types.StringType and (
                 value.startswith("'") or value.startswith('"')):
             value = value.strip('\'"') # strip php string delimiters

@@ -33,7 +33,7 @@ from ..fabric_utils import *
 
 __all__ = ['execute_queued_updates']
 
-@parallel(pool_size=10)
+@parallel(pool_size=config.concurrency)
 def do_update(backend_mapping):
     '''Fabric task that updates packages and logs the output.'''
     backend = backend_mapping[env.host]
