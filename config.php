@@ -40,4 +40,7 @@ $mail_from   = "updian@domain.tld";     // From: for mail, default: updian@yourh
 // concurrency options (Python backend)
 $concurrency = 20;
 
+// backend auto-detection
+$autodetect_backend = true;
+
 ?>

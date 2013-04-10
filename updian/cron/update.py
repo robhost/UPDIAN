@@ -37,10 +37,15 @@ __all__ = ['execute_queued_updates']
 def do_update(metadata_mapping):
     '''Fabric task that updates packages and logs the output.'''
     metadata = metadata_mapping[env.host]
-    backend = metadata.backend or metadata.defaults['backend']
+    backend = metadata.backend
     use_sudo = (env.user != 'root')
 
     env.gateway = metadata.gateway or metadata.defaults['gateway']
+
+    if backend is None and not config.autodetect_backend:
+        backend = metadata.defaults['backend']
+        print('No backend given for %s and auto-detection is disabled. '
+              'Defaulting to %s' % (env.host, backend))
 
     print('Host: %s, Port: %s, Engine: %s, Gateway: %s' %
           (env.host, env.port, backend, env.gateway))

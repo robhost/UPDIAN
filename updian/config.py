@@ -33,6 +33,7 @@ mail_active = True
 mail_to = 'root@localhost'
 mail_from = 'updian@localhost'
 concurrency = 20
+autodetect_backend = True
 
 _TRANSLATION_TABLE = {
     '$cfg_file': 'serverlist_file',

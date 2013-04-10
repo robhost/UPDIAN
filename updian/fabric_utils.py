@@ -25,17 +25,51 @@ import fabric.api
 class UnknownBackendError(Exception):
     '''Raised when an unsupported backend is used.'''
     def __init__(self, backend):
-        super().__init__('Unkown backend: %s' % backend)
+        super().__init__('Unknown backend: %s' % backend)
 
-def update_check(backend, use_sudo=False):
-    '''
-    Check for available package updates using the specified backend.
+def _detect_backend():
+    '''Detect package management backend.'''
+    supported_backends = {
+        '/usr/bin/apt-get': None,
+        '/usr/bin/yum': None,
+    }
+
+    for backend in supported_backends:
+        with fabric.api.settings(ok_ret_codes=[0, 1]):
+            p = fabric.api.run('test -x %s' % backend, quiet=True)
+        supported_backends[backend] = p.return_code
+
+    available_backends = [x for x in supported_backends if
+                          supported_backends[x] == 0]
+
+    # shouldn't really happen, but better be safe then sorry
+    # as there are things like apt-rpm around
+    if len(available_backends) > 1:
+        raise RuntimeError('Auto-detection of package manager returned '
+                           'ambiguous results. More than one package '
+                           'manager found on %s.' % fabric.api.env.host)
+
+    backend = available_backends[0]
+
+    if backend == '/usr/bin/apt-get':
+        return 'apt'
+    elif backend == '/usr/bin/yum':
+        return 'yum'
+
+    return None
+
+def update_check(backend=None, use_sudo=False):
+    '''Check for available package updates using the specified backend.
 
     When use_sudo is True (default=False) sudo is used to start the
     specified backend.
+    If backend is None (the default) auto-detection is performed.
 
     '''
     driver = fabric.api.sudo if use_sudo else fabric.api.run
+
+    if backend is None:
+        backend = _detect_backend()
 
     if backend == 'apt':
         driver('DEBIAN_FRONTEND=noninteractive apt-get update -qq', quiet=True)
@@ -51,15 +85,18 @@ def update_check(backend, use_sudo=False):
 
     return ret
 
-def upgrade_packages(backend, use_sudo=False):
-    '''
-    Upgrade all packages using the specified backend.
+def upgrade_packages(backend=None, use_sudo=False):
+    '''Upgrade all packages using the specified backend.
 
     When use_sudo is True (default=False) sudo is used to start the
     specified backend.
+    If backend is None (the default) auto-detection is performed.
 
     '''
     driver = fabric.api.sudo if use_sudo else fabric.api.run
+
+    if backend is None:
+        backend = _detect_backend()
 
     if backend == 'apt':
         command = 'DEBIAN_FRONTEND=noninteractive apt-get --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" upgrade'
