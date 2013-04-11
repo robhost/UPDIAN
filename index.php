@@ -44,7 +44,7 @@ A:hover     {text-decoration: underline; color: dodgerblue}
 <meta http-equiv="pragma" content="no-cache">
 <body>
 <h1>Updian - UpdateDebian v0.4</h1>
-<h4>by <a href="http://www.robhost.de/updian/">RobHost GmbH</a>, 2007-<?=date(Y)?></h4>
+<h4>by <a href="http://www.robhost.de/updian/">RobHost GmbH</a>, 2007-<?=date('Y')?></h4>
 <hr>
 <a href="index.php">Home</a> &nbsp;-&nbsp; <a href="index.php?act=queue">Queue</a> &nbsp;-&nbsp; <a href='index.php?act=servers'>Servers</a> &nbsp;-&nbsp; <a href='index.php?act=logs'>Logs</a> &nbsp;-&nbsp; <a href="index.php?act=ssh">Multi-SSH</a>
 <hr>
@@ -95,40 +95,136 @@ if($_REQUEST[act] == "ssh") {
 // show|edit server-list
 
 if($_REQUEST[act] == "servers") {
-
-    if( isset($_POST[save]) ) {
-
-        // save new $cfg_file
-        $fp = fopen($cfg_file, "w") or die("Could not open $cfg_file for writing ...");
-        $postdata = trim($_POST[txt]) . "\n";
-        @fwrite($fp, $postdata, strlen($postdata));
-        @fclose($fp);
+    $file_parts = explode('.', $cfg_file);
+    if (array_pop($file_parts) !== 'json') {
+        die("Please convert your server.txt to server.json using the convert_serverlist.php script.</body></html>");
     }
 
-    #$cmd = "cat $cfg_file";
-    #$srv = `$cmd`;
-    #$row = count( file($cfg_file) );  // calculate rows for textarea
-    $file = file($cfg_file);
-    $row  = count($file) + 2;
-    $srvs = '';
-    sort($file);
+    if( isset($_REQUEST["add"]) ) {
+        $additional_server = array();
+        $additional_server["hostname"] = (isset($_POST["hostname"])) ? $_POST["hostname"] : '';
+        $_REQUEST["server_id"] = $additional_server["hostname"];
+    }
 
-    foreach($file as $srv) {
-        if( trim($srv) == "") {
-            continue;
+    $serverlist = json_decode(file_get_contents($cfg_file), true);
+    if (isset($additional_server))
+        $serverlist[] = $additional_server;
+    usort($serverlist, function ($a, $b) { return strcmp($a['hostname'], $b['hostname']); });
+
+    if( isset($_REQUEST["server_id"]) ) {
+        $server_attrs = array('hostname', 'port', 'user', 'backend', 'gateway');
+        $server_id = $_REQUEST["server_id"];
+
+        if( isset($_POST['save']) || isset($_REQUEST['delete']) ) {
+            for ($i = 0; $i < count($serverlist); $i++) {
+                if ($serverlist[$i]['hostname'] === $server_id) {
+                    if (isset($_REQUEST['delete'])) {
+                        unset($serverlist[$i]);
+                        break;
+                    }
+
+                    foreach ($server_attrs as $attr) {
+                        if(trim($_POST[$attr]) != '') {
+                            $serverlist[$i][$attr] = trim($_POST[$attr]);
+                        } elseif (isset($serverlist[$i][$attr])) {
+                            unset($serverlist[$i][$attr]);
+                        }
+                    }
+
+                    if ($serverlist[$i]['hostname'] === '') {
+                        die("Hostname must not be empty.");
+                    }
+
+                    if (isset($serverlist[$i]['port'])) {
+                        $port = $serverlist[$i]['port'];
+                        $serverlist[$i]['port'] = intval($port);
+
+                        if ($port != $serverlist[$i]['port'] || 1 > $port || 65535 < $port)
+                            die("Port has to be an integer between 1 and 65535 if set.");
+                    }
+
+                    break;
+                }
+            }
+
+            // save new $cfg_file
+            $output = json_encode(array_values($serverlist));
+            file_put_contents($cfg_file, $output);
+            die("Server list successfully saved.</body></html>");
         }
-        $srvs.= $srv;
+
+        $server = null;
+        for ($i = 0; $i < count($serverlist); $i++) {
+            if ($serverlist[$i]['hostname'] === $server_id) {
+                $server = $serverlist[$i];
+                break;
+            }
+        }
+
+        if (!$server) {
+            die("Server '".htmlentities($server_id)."' not found in server list.<br><br></body></html>");
+        }
+
+        // set dummy values for unset attributes
+        foreach ($server_attrs as $attr) {
+            if (!isset($server[$attr]))
+                $server[$attr] = '';
+        }
+
+        echo "<h3>Edit host <i>" . htmlentities($server_id) . "</i>:</h3><br>\n";
+        echo "<form action='index.php' method='post'>\n";
+        echo "<input type='hidden' name='act' value='servers'>\n";
+        echo "<input type='hidden' name='server_id' value='" . htmlentities($server_id) . "'>\n";
+        echo "<input type='hidden' name='save' value='1'>\n";
+        if ( isset($_REQUEST["add"]) )
+            echo "<input type='hidden' name='add' value='1'>\n";
+
+        $labels = array(
+            'hostname' => 'Hostname',
+            'port' => 'Port (default: 22)',
+            'user' => 'User (default: root)',
+            'backend' => 'Backend (default: apt)',
+            'gateway' => 'Gateway (format: user@host:port)',
+        );
+
+        echo "<table>\n";
+        foreach ($server_attrs as $attr) {
+            echo "<tr><td><label for='$attr'>{$labels[$attr]}</label></td>";
+
+            if ($attr === "backend") {
+                echo "<td><select name='backend'>";
+                foreach (array("apt", "yum") as $option) {
+                    if ($option === $server[$attr])
+                        echo "<option selected>";
+                    else
+                        echo "<option>";
+                    echo htmlentities($option) . "</option>";
+                }
+                echo "</select></td></tr>";
+            }
+            else
+                echo "<td><input type='text' name='$attr' value='" . htmlentities($server[$attr]) . "'></td></tr>\n";
+        }
+        echo "</table>\n";
+
+        echo "<br><br><input type='submit' value='Save to $cfg_file'>\n";
+        echo "</form>\n";
+    } else {
+        echo "<h3>View/Edit <i>$cfg_file</i>:</h3><br>\n";
+
+        echo "<ul style='line-height: 1.8em;'>\n";
+        foreach($serverlist as $k => $server) {
+            $hostname = $server['hostname'];
+
+            echo "<li>";
+            echo htmlentities($hostname);
+            echo " <a href='index.php?act=servers&amp;server_id=".urlencode($hostname)."'>[Edit host]</a>";
+            echo " <a href='javascript:ask(\"index.php?act=servers&amp;server_id=".urlencode($hostname)."&amp;delete=1\", \"Delete host ".htmlentities($hostname)."?\")'>[Delete host]</a>";
+            echo "</li>\n";
+        }
+        echo "</ul>\n";
+        echo "<a href='index.php?act=servers&amp;add=1'>[Add new host]</a>";
     }
-
-    $srvs.= "\n";
-
-    echo "<h3>View/Edit <i>$cfg_file</i>:</h3>(one host per line, optional :portnumber after hostname if SSH not on 22)<br><br>";
-    echo "<form action='index.php' method='post'>\n";
-    echo "<input type='hidden' name='act' value='servers'>\n";
-    echo "<input type='hidden' name='save' value='1'>\n";
-    echo "<textarea style='border:1px solid black;padding:5px;' name='txt' rows='$row' cols='50'>$srvs</textarea>\n";
-    echo "<br><br><input type='submit' value='Save to $cfg_file'>\n";
-    echo "</form>\n";
     
     die("<br><br></body></html>");
 }
