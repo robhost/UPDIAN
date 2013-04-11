@@ -1,7 +1,7 @@
 <?php
 /*
 
-    UPDIAN - UpdateDebian v0.4
+    UPDIAN - UpdateDebian v0.5
 
     Minimalistic Debian Package Upgrade Tool with Web-Frontend by Robert Klikics, RobHost GmbH [rk@robhost.de], 2007-2013
 

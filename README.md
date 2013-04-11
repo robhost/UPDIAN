@@ -1,8 +1,8 @@
 
-Updian v0.4 - UpdateDebian
+Updian v0.5 - UpdateDebian
 ==========================
 
-Robert Klikics, RobHost GmbH [rk@robhost.de], 2007-2012
+Robert Klikics, RobHost GmbH [rk@robhost.de], 2007-2013
 
 License: GPL
 

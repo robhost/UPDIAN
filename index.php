@@ -1,9 +1,9 @@
 <?php
 /*
 
-    UPDIAN - UpdateDebian v0.4
+    UPDIAN - UpdateDebian v0.5
 
-    Minimalistic Debian Package Upgrade Tool with Web-Frontend by Robert Klikics, RobHost GmbH [rk@robhost.de], 2007-2012
+    Minimalistic Debian Package Upgrade Tool with Web-Frontend by Robert Klikics, RobHost GmbH [rk@robhost.de], 2007-2013
 
     License:    GPL
     Web:        http://robhost.de/updian
@@ -43,7 +43,7 @@ A:hover     {text-decoration: underline; color: dodgerblue}
 </style>
 <meta http-equiv="pragma" content="no-cache">
 <body>
-<h1>Updian - UpdateDebian v0.4</h1>
+<h1>Updian - UpdateDebian v0.5</h1>
 <h4>by <a href="http://www.robhost.de/updian/">RobHost GmbH</a>, 2007-<?=date('Y')?></h4>
 <hr>
 <a href="index.php">Home</a> &nbsp;-&nbsp; <a href="index.php?act=queue">Queue</a> &nbsp;-&nbsp; <a href='index.php?act=servers'>Servers</a> &nbsp;-&nbsp; <a href='index.php?act=logs'>Logs</a> &nbsp;-&nbsp; <a href="index.php?act=ssh">Multi-SSH</a>
