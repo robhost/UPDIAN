@@ -143,15 +143,8 @@ def collect_update_data(serverlist):
         print('Mail sent to', config.mail_to)
 
 if __name__ == '__main__':
-    from ..serverlist import ServerList, convert_from_csv
+    from ..serverlist import ServerList
 
-    serverlist_file = config.serverlist_file
-
-    if serverlist_file.endswith('.txt'):
-        serverlist_file_old = serverlist_file
-        serverlist_file = serverlist_file.replace('.txt', '.json')
-        convert_from_csv(serverlist_file_old, serverlist_file)
-
-    serverlist = ServerList.from_file(serverlist_file)
+    serverlist = ServerList.from_file(config.serverlist_file)
 
     collect_update_data(serverlist)
