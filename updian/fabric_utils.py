@@ -99,7 +99,10 @@ def upgrade_packages(backend=None, use_sudo=False):
         backend = _detect_backend()
 
     if backend == 'apt':
-        command = 'DEBIAN_FRONTEND=noninteractive apt-get --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" upgrade'
+        command = ('PAGER=cat DEBIAN_FRONTEND=noninteractive '
+                   'apt-get --yes '
+                   '-o Dpkg::Options::="--force-confdef" '
+                   '-o Dpkg::Options::="--force-confold" upgrade')
     elif backend == 'yum':
         command = 'yum -y update'
     else:
