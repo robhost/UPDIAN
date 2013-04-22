@@ -52,7 +52,8 @@ def do_update(metadata_mapping):
 
     env.shell = '/bin/bash -c'
 
-    s = upgrade_packages(backend, use_sudo)
+    s = upgrade_packages(backend, use_sudo,
+                         config.allow_unauthenticated_packages)
 
     log_entry = '{host} ({date}):\n\n{output}\n\n####################\n\n'
     log_entry = log_entry.format(host=env.host,

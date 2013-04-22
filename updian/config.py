@@ -34,6 +34,7 @@ mail_to = 'root@localhost'
 mail_from = 'updian@localhost'
 concurrency = 20
 autodetect_backend = True
+allow_unauthenticated_packages = False
 
 _TRANSLATION_TABLE = {
     '$cfg_file': 'serverlist_file',

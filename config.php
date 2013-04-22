@@ -43,4 +43,7 @@ $concurrency = 20;
 // backend auto-detection
 $autodetect_backend = true;
 
+// allow unauthenticated packages
+$allow_unauthenticated_packages = false;
+
 ?>

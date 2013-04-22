@@ -85,7 +85,9 @@ def update_check(backend=None, use_sudo=False):
 
     return ret
 
-def upgrade_packages(backend=None, use_sudo=False):
+def upgrade_packages(backend=None,
+                     use_sudo=False,
+                     allow_unauthenticated_packages = False):
     '''Upgrade all packages using the specified backend.
 
     When use_sudo is True (default=False) sudo is used to start the
@@ -103,6 +105,8 @@ def upgrade_packages(backend=None, use_sudo=False):
                    'apt-get --yes '
                    '-o Dpkg::Options::="--force-confdef" '
                    '-o Dpkg::Options::="--force-confold" upgrade')
+        if allow_unauthenticated_packages:
+            command += ' --allow-unauthenticated '
     elif backend == 'yum':
         command = 'yum -y update'
     else:
