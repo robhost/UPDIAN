@@ -112,7 +112,7 @@ def upgrade_packages(backend=None,
     else:
         raise UnknownBackendError(backend)
 
-    return driver(command)
+    return driver(command, pty=False)
 
 def checkrestart(use_sudo=False):
     '''Issue the checkrestart-command.'''
