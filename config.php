@@ -1,8 +1,7 @@
 <?php
 
 /*
-
-    UPDIAN - UpdateDebian v0.5
+    UPDIAN - UpdateDebian
 
     Minimalistic Debian Package Upgrade Tool with Web-Frontend by Robert Klikics, RobHost GmbH [rk@robhost.de], 2007-2013
 
@@ -10,7 +9,6 @@
     Web:        http://robhost.de/updian
     File:       config.php - setup
     Usage:      Edit the vars as needed
-                            
 */  
 
 

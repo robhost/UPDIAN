@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block content %}
+<p>Data collected on: {{ lastupdate|default('never') }}</p>
+{% if updatelist is not defined %}
+    <h3>No updates available.</h3>
+{% else %}
+    <h3>Updates available:</h3>
+    <table id="update_overview">
+    {% for host in updatelist %}
+        <tr>
+            <td>{{ host.name }}</td>
+            <td class="aligncenter">
+                <a href="{{url_for('home', server=host.name)}}#updates" title="show packages">
+                    {{ host.update_count }} update{% if host.update_count != 1 %}s{% endif %}
+                </a>
+            </td>
+            <td class="alignright">
+            {% if host.queued -%}
+                queued
+            {% else %}
+                <a href="javascript:ask('{{url_for('queue_host', hostname=host.name)}}', 'Install updates for {{host.name}} when install-cronjob runs next time?')">add to queue</a>
+            {% endif %}
+            </td>
+        </tr>
+    {% endfor %}
+    </table>
+    <p><a href="javascript:ask('/queue/all', 'Add all updates on all {{updatelist|length}} servers to the queue?')">Add all {{updatelist|length}} servers to update queue</a></p>
+    {% if update_details is defined %}
+    <h3><a name="updates"></a>Updates for {{update_details.host}}
+        {% if not update_details.queued %}
+            <a href="javascript:ask('{{url_for('queue_host', hostname=update_details.host)}}', 'Install updates for {{update_details.host}} when install-cronjob runs next time?')"> [ add to queue ]</a>
+        {% endif %}</h3>
+        <ul>
+        {% for update in update_details.updates %}
+            <li>{{update}}</li>
+        {% endfor %}
+        </ul>
+    <a href="#top">back to top</a>
+    {% endif %}
+{% endif %}
+{% endblock %}

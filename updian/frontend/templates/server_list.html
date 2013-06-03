@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div>
+    <h3>View/Edit <i>{{serverlist_file}}</i>:</h3>
+    <a href="{{url_for('edit_server')}}">Add a new host</a>
+    <ul class="serverlist">
+        {% for server in serverlist %}
+        <li>
+            {{server.hostname}}
+            <form method="get" action="{{url_for('edit_server', hostname=server.hostname)}}">
+                <input type="submit" value="Edit host">
+            </form>
+            <form method="post" action="{{url_for('delete_server')}}">
+                <input type="hidden" name="hostname" value="{{server.hostname}}">
+                <input type="hidden" name="_csrf_token" value="{{csrf_token()}}">
+                <input type="submit" value="Delete host">
+            </form>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

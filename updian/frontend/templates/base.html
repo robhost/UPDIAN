@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{% block title %}Updian{% endblock %}</title>
+    <script type="text/javascript">
+        function ask(url, txt) {
+            if(confirm(txt))
+                window.location = url;
+        }
+
+        function doIt() {
+            if(confirm('This runs the given command on ALL your machines!\nAre you sure?'))
+                document.f1.submit();
+        }
+    </script>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+    <meta http-equiv="pragma" content="no-cache">
+     {% block head %}{% endblock %}
+</head>
+<body>
+    <h1><img src="{{ url_for('static', filename='logo.png') }}" alt="UPDIAN"><span class="version_number">v0.5</span><a name="top"></a></h1>
+<h4>by <a href="http://www.robhost.de/updian/">RobHost GmbH</a>, 2007-2013</h4>
+<ul id="main_menu">
+    <li><a href="{{ url_for('home') }}">Home</a></li>
+    <li>-</li>
+    <li><a href="{{ url_for('show_queue') }}">Queue</a></li>
+    <li>-</li>
+    <li><a href="{{ url_for('list_servers') }}">Servers</a></li>
+    <li>-</li>
+    <li><a href="{{ url_for('list_logs') }}">Logs</a></li>
+</ul>
+
+{% block flashes %}
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+<ul class=flashes>
+    {% for message in messages %}
+    <li><span>{{ message }}</span></li>
+    {% endfor %}
+</ul>
+{% endif %}
+{% endwith %}
+{% endblock %}
+
+{% block content %}{% endblock %}
+</body>
+</html>

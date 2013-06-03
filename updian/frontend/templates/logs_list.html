@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% if logs is not defined %}
+    <h3>No log files available.</h3>
+{% else %}
+    <h3>Logfiles:</h3>
+    <table id="update_overview">
+    {% for host in logs %}
+        <tr>
+            <td>
+                {% if host.name.endswith('_checkrestart') %}
+                <span class="needsrestart">
+                {% endif %}
+                <a href="{{ url_for('show_logfile', hostname=host.name) }}">{{ host.name }}</a>
+                {% if host.name.endswith('_checkrestart') %}
+                </span>
+                {% endif %}
+            </td>
+            <td>{{ host.update_date }}</td>
+            <td class="alignright">
+                <a href="javascript:ask('{{url_for('delete_logfile', hostname=host.name)}}', 'Delete log file for {{host.name}} from filesystem?')">Delete log</a>
+            </td>
+        </tr>
+    {% endfor %}
+    </table>
+    <p><a href="javascript:ask('{{url_for('delete_all_logfiles')}}', 'This deletes all log files. Are you sure?')">Delete all logs</a></p>
+{% endif %}
+{% endblock %}

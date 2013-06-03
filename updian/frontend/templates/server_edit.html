@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block content %}
+<form method="post" action="{{url_for('edit_server')}}">
+    <input type="hidden" name="host_id" value="{{host_id|default('', true)}}">
+    <input type="hidden" name="_csrf_token" value="{{csrf_token()}}">
+    <table>
+        <tr>
+            <td><label for="hostname">Hostname</label></td>
+            <td><input type="text" name="hostname" value="{{server.hostname|default('', true)}}"></td>
+        </tr>
+        <tr>
+            <td><label for="port">Port (default: 22)</label></td>
+            <td><input type="text" name="port" value="{{server.port|default('', true)}}"></td>
+        </tr>
+        <tr>
+            <td><label for="user">User (default: root)</label></td>
+            <td><input type="text" name="user" value="{{server.user|default('', true)}}"></td>
+        </tr>
+        <tr>
+            <td><label for="backend">Backend (default: apt)</label></td>
+            <td><select name="backend">
+                {% for backend in [None, 'apt', 'yum'] %}
+                {% if backend == None %}
+                    <option value="" {% if backend == server.backend %}selected{% endif %}>Default or autodetect</option>
+                {% else %}
+                    <option {% if backend == server.backend %}selected{% endif %}>{{backend}}</option>
+                {% endif %}
+                {% endfor %}
+            </select></td>
+        </tr>
+        <tr>
+            <td><label for="user">Gateway (format: user@host:port)</label></td>
+            <td><input type="text" name="gateway" value="{{server.gateway|default('', true)}}"></td>
+        </tr>
+    </table>
+    <input type="submit" value="Save host">
+</form>
+{% endblock %}

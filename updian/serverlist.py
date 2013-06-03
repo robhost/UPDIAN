@@ -24,6 +24,7 @@ from __future__ import print_function
 
 import functools
 import json
+import operator
 import os.path
 import sys
 import types
@@ -54,6 +55,9 @@ class ServerList(list):
         with open(server_file, 'w') as fp:
             return dump_it(self, fp, indent)
 
+    def sort(self):
+        super(ServerList, self).sort(key=operator.attrgetter('hostname'))
+
 class ServerListJSONEncoder(json.JSONEncoder):
     '''JSON encoder for Server objects.'''
     def default(self, obj):
@@ -74,18 +78,6 @@ class Server(object):
         if port and type(port) != types.IntType:
             port = int(port)
 
-        if port == self.defaults['port']:
-            port = None
-
-        if backend == self.defaults['backend']:
-            backend = None
-
-        if user == self.defaults['user']:
-            user = None
-
-        if gateway == self.defaults['gateway']:
-            gateway = None
-
         self.hostname = hostname
         self.port = port
         self.backend = backend
@@ -99,6 +91,12 @@ class Server(object):
 
     def __repr__(self):
         return repr(dict(self))
+
+    def __eq__(self, other):
+        return self.hostname == other.hostname
+
+    def __ne__(self, other):
+        return self.hostname != other.hostname
 
 def _file_format_dispatch(function):
     def get_target_function(fmt):

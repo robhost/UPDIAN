@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+<p>Last update cronjob run: {{ lastrun|default('never') }}</p>
+{% if updatequeue is not defined %}
+    <h3>Update queue is empty.</h3>
+{% else %}
+    <h3>Servers in queue (will be updated on next run):</h3>
+    <table id="update_overview">
+    {% for host in updatequeue %}
+        <tr>
+            <td>{{ host.name }}</td>
+            <td>{{ host.queue_date }}</td>
+            <td class="alignright">
+                <a href="javascript:ask('{{url_for('dequeue_host', hostname=host.name)}}', 'Remove {{host.name}} from update queue?')">remove from queue</a>
+            </td>
+        </tr>
+    {% endfor %}
+    </table>
+{% endif %}
+{% endblock %}
