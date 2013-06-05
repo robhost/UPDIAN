@@ -1,6 +1,0 @@
-order deny,allow
-
-AuthUserFile /var/www/updian/.htpasswd
-AuthType Basic
-AuthName "Updian"
-require valid-user
