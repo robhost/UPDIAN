@@ -1,6 +1,7 @@
 from __future__ import print_function
 
 import crypt
+import getpass
 import os
 import random
 import string
@@ -75,8 +76,8 @@ def set_interactively():
             print('Current password does not match.')
             sys.exit(1)
 
-    password = raw_input('New password: ')
-    password2 = raw_input('Repeat new password: ')
+    password = getpass.getpass('New password: ')
+    password2 = getpass.getpass('Repeat new password: ')
 
     if password != password2:
         print('Passwords do not match')
