@@ -7,18 +7,13 @@
             if(confirm(txt))
                 window.location = url;
         }
-
-        function doIt() {
-            if(confirm('This runs the given command on ALL your machines!\nAre you sure?'))
-                document.f1.submit();
-        }
     </script>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
     <meta http-equiv="pragma" content="no-cache">
      {% block head %}{% endblock %}
 </head>
 <body>
-    <h1><img src="{{ url_for('static', filename='logo.png') }}" alt="UPDIAN"><span class="version_number">v0.5</span><a name="top"></a></h1>
+    <h1><img src="{{ url_for('static', filename='logo.png') }}" alt="UPDIAN"><span class="version_number">v0.6</span><a name="top"></a></h1>
 <h4>by <a href="http://www.robhost.de/updian/">RobHost GmbH</a>, 2007-2013</h4>
 <ul id="main_menu">
     <li><a href="{{ url_for('home') }}">Home</a></li>

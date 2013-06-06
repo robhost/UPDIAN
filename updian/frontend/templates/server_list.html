@@ -14,7 +14,7 @@
             <form method="post" action="{{url_for('delete_server')}}">
                 <input type="hidden" name="hostname" value="{{server.hostname}}">
                 <input type="hidden" name="_csrf_token" value="{{csrf_token()}}">
-                <input type="submit" value="Delete host">
+                <input type="submit" onclick="javascript:return confirm('Delete Host {{server.hostname}}');" value="Delete host">
             </form>
         </li>
         {% endfor %}
