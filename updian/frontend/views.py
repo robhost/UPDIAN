@@ -211,3 +211,5 @@ def delete_all_logfiles():
     # FIXME: This has the possibility of deleting more than the user has seen
     for hostname in available_logs():
         delete_logfile(hostname)
+
+    return redirect(url_for('list_logs'))
