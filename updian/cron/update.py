@@ -24,6 +24,7 @@ from __future__ import print_function
 
 import glob
 import os
+import random
 import time
 
 from fabric.api import parallel, execute, env, settings, hide
@@ -92,6 +93,7 @@ def execute_queued_updates(serverlist):
         return
 
     serverlist = filter(lambda s: s.hostname in host_queue, serverlist)
+    random.shuffle(serverlist)
     metadata_mapping = dict(((s.hostname, s) for s in serverlist))
 
     with hide('everything'):
