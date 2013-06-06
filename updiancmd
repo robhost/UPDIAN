@@ -28,10 +28,11 @@ usage () {
     cat <<EOF
 Usable commands:
 
-    collect    Collect updates from configured servers
-    update     Execute updates on configured servers
-    convert_sl Convert old text-based server list to new JSON format
-    setpw      Set password for a user
+    collect     Collect updates from configured servers
+    update      Execute updates on configured servers
+    convert_sl  Convert old text-based server list to new JSON format
+    setpw       Set password for a user
+    runserver   Start the builtin HTTP server
 EOF
 }
 
@@ -73,6 +74,10 @@ EOF
     setpw)
         cd $(dirname $0)
         exec $PYTHON -m updian.passwd
+        ;;
+    runserver)
+        cd $(dirname $0)
+        exec $PYTHON runserver.py $@
         ;;
     *)
         echo "Error: Unknown command \`$command\` specified." >&2
