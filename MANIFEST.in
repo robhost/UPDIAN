@@ -1,0 +1,3 @@
+include CHANGELOG CONTRIBUTORS LICENSE
+recursive-include updian/frontend/static *
+recursive-include updian/frontend/templates *

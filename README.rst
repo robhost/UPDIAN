@@ -21,7 +21,7 @@ logs after the updates are done.
 
 Updian does not need any databases, every data is stored by (mostly) empty
 flatfiles. It can manage a high number of servers, I've tested/used it with
-100+ servers without any problems...
+100+ servers without any problems ...
 
 Actually, Updian only does "apt-get upgrade", not "dist-upgrade". So it's a
 good idea to run "apticron" or anything in parallel on the remote machines to
@@ -32,7 +32,7 @@ correctly, apticron should mail you the same update-infos (except
 dist-upgrades) as Updian shows up in the webfrontend.
 
 For every server Updian creates an logfile, so you're always informed about
-updates made. The logfiles are available through the web frontend.
+updates made. The logfiles are available through the webfrontend.
 
 
 Requirements
@@ -43,45 +43,66 @@ Requirements
 - Any Linux-Distribution on the machine which runs Updian (local-side)
 - Python 2.6 or newer (local-side)
 - A crond running (local-side)
-- Access as root to all involved machines (gaining root via sudo is also supported)
-- Exchanged SSH-publickeys between the machine running Updian and the client-servers
-    - that means you can login from the machine running Updian to the remote servers via "ssh <server>" without entering a password
+- Access as root to all involved machines (gaining root via sudo is also
+  supported)
+- Exchanged SSH-publickeys between the local machine running Updian and the
+  remote servers
+    - that means you can login from the machine running Updian to the remote
+      server via "ssh <server>" without entering a password
     - Howto: On the machine running Updian:
-        - ssh-keygen -t dsa
-        - cat ~/.ssh/id_dsa.pub | ssh root@remote_server cat - ">>" ~/.ssh/authorized_keys
-        - OR use 'ssh-copy-id <server>'
+        - ``ssh-keygen -t rsa``
+        - ``cat ~/.ssh/id_dsa.pub |
+          ssh root@remote_server cat - ">>" ~/.ssh/authorized_keys``
+        - OR use ``ssh-copy-id <server>``
+- Optional: Web server with WSGI support or
+  a separate WSGI application server (local-side)
 
 
 Installation
 ------------
 
-- Extract the files to a directory on your server (the machine where Updian should run).
-- Edit the config.php (according to the instructions inside the file).
-- Make sure the data, log and todo directories are writeable by the user that will be running updian.
-- Install Updian's dependencies: Fabric 1.6, Flask 0.9 and flask-csrf 0.9.2
-  (e.g. via pip: `pip install Fabric==1.6.0 Flask==0.9 flask-csrf==0.9.2`)
-  Note: It is recommended to use a virtual environment for production usage (see [virtualenv documentation](http://www.virtualenv.org/en/latest/)).
-- Run `updiancmd runserver <local ip address>` or
-  configure your webserver to serve updian.wsgi (the latter is recommended when
-  you serve Updian on a WAN interface).
+From PyPI or from archive via pip (recommended)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. TODO
+
+From archive (manually)
+^^^^^^^^^^^^^^^^^^^^^^^
+
+- Unzip the files to a folder on your server (the machine where Updian should
+  run).
+- Edit the config.php according to the instructions inside the file.
+- Make sure the data, log and todo directories are writeable by the user
+  that will be running updian.
+- Install Updian's dependencies Fabric, Flask, flask-csrf and flask-basicauth
+  (e.g. via pip: ``pip install Fabric>=1.6.0 Flask>=0.9 flask-csrf>=0.9.2
+  flask-basicauth>=0.1.1``).
+  Note: It is recommended to use a virtual environment for production usage (see
+  `virtualenv documentation`_).
+- Optional: Use ``updiancmd setpw`` to create one or more users for basic
+  authentication. If you skip this everyone on the network you serve Updian on
+  will be able to access it without restriction.
+- Run ``updiancmd runserver <local ip address>``.
 - Open http://yourhost:5000/ in your web browser.
 - Click on "Servers" and add your servers.
-- For test purposes run `updiancmd collect` on your shell
-    - You should see some output and the updates (if there were any) should be visible in the web interface.
-- Run `updiancmd update` if you want Updian to update your chosen servers (from the queue).
-- Add cronjobs for full automatic updates (`crontab -e`). Example crontab entries:
+- For test purposes run ``updiancmd collect`` on your shell.
+    - You should see some output and (if there are updates) the updates should
+      be visible via the web interface.
+- Run ``updiancmd update`` if you want Updian to update your chosen servers.
+- Add cronjobs for full automatic updates (``crontab -e``). Example crontab
+  entries::
 
     0 8 * * * /var/www/updian/updiancmd collect > /dev/null 2>&1 # (collect updates daily at 8 am)
     0 9 * * * /var/www/updian/updiancmd update > /dev/null 2>&1 # (run updates daily at 9 am)
 
-- Optional: To use Updian's builtin HTTP basic authentication run `updiancmd setpw` to create one or more logins.
+.. _virtualenv documentation: http://www.virtualenv.org/en/latest/
 
 
 Example configuration using Apache HTTPd 2.x with mod\_wsgi
 -----------------------------------------------------------
 
 To use mod\_wsgi on the Apache2 web server you can use something along the
-following lines in your virtual host configuration:
+following lines in your virtual host configuration::
 
     <IfModule mod_wsgi.c>
         WSGIScriptAlias /updian /var/www/updian/updian.wsgi
@@ -99,18 +120,21 @@ following lines in your virtual host configuration:
     </IfModule>
 
 If you have installed Updian's dependencies into a virtual environment you
-should add its site-packages directory to the python-path of the daemon process:
+should add its site-packages directory to the python-path of the daemon
+process::
 
     WSGIDaemonProcess updian-webif python-path=/yourvenv/lib/python2.6/site-packages:/var/www/updian home=/var/www/updian
 
-You can also use `WSGIPythonHome` to set an alternative Python interpreter for
-mod\_wsgi to use globally (see: [WSGIPythonHome documentation](http://code.google.com/p/modwsgi/wiki/ConfigurationDirectives#WSGIPythonHome)).
+You can also use ``WSGIPythonHome`` to set an alternative Python interpreter for
+mod\_wsgi to use globally (see: `WSGIPythonHome documentation`_).
+
+.. _WSGIPythonHome documentation: http://code.google.com/p/modwsgi/wiki/ConfigurationDirectives#WSGIPythonHome
 
 
-Updating from old server.txt format (used in Updian v0.4 and older)
+Updating from old server.txt format (used in UPDIAN v0.4 and older)
 -------------------------------------------------------------------
 
-- Run `updiancmd convert_sl`
+- Run ``updiancmd convert_sl``
 - Update your config.php to point to the newly created file
 
 
@@ -122,18 +146,18 @@ that need to be restartet. That is often needed if libs used by many
 programs (libssl i.e.) have been updated on the remote machine. After that
 it is i.e. required to restart apache or postfix.
 
-Updian uses the script `checkrestart` from the package `debian-goodies` for
-that. Just apply `apt-get install debian-goodies` on the desired remote
+Updian uses the script ``checkrestart`` from the package ``debian-goodies`` for
+that. Just apply ``apt-get install debian-goodies`` on the desired remote
 machines.
 
 It does, in short, anything like this to find out which procs using
-deprecated libs: `lsof -n | egrep -i "(DEL|inode)"`
+deprecated libs: ``lsof -n | egrep -i "(DEL|inode)"``
 
-Updian writes the output from `checkrestart` to <server>\_checkrestart.log
+Updian writes the output from ``checkrestart`` to <server>\_checkrestart.log
 (see "Logs" in webfrontend).
 
 
-Updian restricted shell - updian-rsh
+UPDIAN restricted shell - updian-rsh
 ------------------------------------
 
 Updian's default mode of operation gives the updian server unlimited root access
@@ -148,14 +172,20 @@ To use it, copy updian-rsh to the machines you want to update, for example to
 /usr/local/bin.
 Prefix the line in /root/.ssh/authorized\_keys with
 
+::
+
     command="/usr/local/bin/updian-rsh"
 
 so that it looks like this:
+
+::
 
     command="/usr/local/bin/updian-rsh" ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEA8Yf[...]
 
 Now when you try to connect to that server with "ssh root@remote\_server"
 you should get the message
+
+::
 
     Updian Restriced Shell: Interactive shell not allowed
 
