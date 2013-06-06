@@ -202,6 +202,8 @@ def delete_logfile(hostname):
     if not os.path.exists(logfile):
         flask.abort(404)
 
+    os.remove(logfile)
+
     return redirect(url_for('list_logs'))
 
 @app.route('/logs/delete_all')
