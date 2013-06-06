@@ -1,15 +1,14 @@
-
-Updian v0.5 - UpdateDebian
+Updian v0.6 - UpdateDebian
 ==========================
 
-Robert Klikics, RobHost GmbH [rk@robhost.de], 2007-2013
+RobHost GmbH [support@robhost.de], 2007-2013
 
-License: GPL
+License: GPLv2+
 
 PLEASE NOTE THAT THIS SOFTWARE COMES WITH ABSOLUTELY NO WARRANTY!
 
 
-WHAT IS IT GOOD FOR?
+What is it good for?
 --------------------
 
 Updian is a minimalistic update-engine for DEBIAN GNU/Linux based machines
@@ -22,40 +21,29 @@ logs after the updates are done.
 
 Updian does not need any databases, every data is stored by (mostly) empty
 flatfiles. It can manage a high number of servers, I've tested/used it with
-100+ servers without any problems ...
+100+ servers without any problems...
 
-Actually, Updian only does "apt-get upgrade", no "dist-upgrade" (for sure
-you can issue this cmd by running Multi-SSH). So it's a good idea to run
-"apticron" or anything in parallel on the remote machines to keep informed
-about upcoming dist-upgrades. Apticron is also good for checking the
-correctness of Updian - it mails you the updates every day including
+Actually, Updian only does "apt-get upgrade", not "dist-upgrade". So it's a
+good idea to run "apticron" or anything in parallel on the remote machines to
+keep informed about upcoming dist-upgrades. Apticron is also good for checking
+the correctness of Updian - it mails you the updates every day including
 changelog. These you can now install with Updian. If Updian is working
 correctly, apticron should mail you the same update-infos (except
 dist-upgrades) as Updian shows up in the webfrontend.
 
 For every server Updian creates an logfile, so you're always informed about
-updates made. The logfiles are available through the webfrontend.
+updates made. The logfiles are available through the web frontend.
 
 
-MULTI-SSH
----------
-
-With Multi-SSH (introduced in v0.2) you can run any shell-command on ALL
-your servers via UPDIAN. Very helpful for "apt-get dist-upgrade" or such
-things. The command is issued on the next cron\_updates.php run. Note that
-this does not work if you are using updian-rsh (see below).
-
-
-REQUIREMENTS
+Requirements
 ------------
 
-- Debian GNU/Linux or other apt-running systems (Ubuntu, Knoppix ...) or yum-running systems like CentOS on the remote-side
+- Debian GNU/Linux or other apt-running systems (Ubuntu, Knoppix ...) or
+  yum-running systems (CentOS, RHEL, Fedora Core ...) on the remote-side
 - Any Linux-Distribution on the machine which runs Updian (local-side)
-- PHP 4.xx or 5.xx installed as CLI (i.e. package php5-cli) on the local-side
-    - You can also call the crons with lynx -dump by crond or something, but with php CLI is recommended
-- Webserver with PHP 4 or 5 enabled (local-side)
+- Python 2.6 or newer (local-side)
 - A crond running (local-side)
-- Access as root to all involved machines (in fact, it doesnt make sense to run updates as normal user ;-) )
+- Access as root to all involved machines (gaining root via sudo is also supported)
 - Exchanged SSH-publickeys between the machine running Updian and the client-servers
     - that means you can login from the machine running Updian to the remote servers via "ssh <server>" without entering a password
     - Howto: On the machine running Updian:
@@ -64,34 +52,69 @@ REQUIREMENTS
         - OR use 'ssh-copy-id <server>'
 
 
-INSTALLATION
+Installation
 ------------
 
-- Unzip the files to a folder on your (web) server (the machine where Updian should run).
-- Edit the config.php (add absolute pathes!) and read the instructions inside this file.
-- Edit the .htpasswd file and change user/password (htpasswd .htpasswd updian)
-- Make sure the /updian - folder is writeable by your webserver-user (www-data or something)
-- Open http://yoururl.tld/path/to/updian/ in your web browser
-- Click on "Servers" and add your servers
-- For test purposes run cron\_collect.php manually with "php cron\_collect.php" on your shell
-    - You should see some output and (if there are updates) your should see the servers/updates on the webinterface
-- Run cron\_updates.php if you want Updian to update your choosed server (from the queue)
-- Add cronjobs for full automatic updates (crontab -e):
+- Extract the files to a directory on your server (the machine where Updian should run).
+- Edit the config.php (according to the instructions inside the file).
+- Make sure the data, log and todo directories are writeable by the user that will be running updian.
+- Install Updian's dependencies: Fabric 1.6, Flask 0.9 and flask-csrf 0.9.2
+  (e.g. via pip: `pip install Fabric==1.6.0 Flask==0.9 flask-csrf==0.9.2`)
+  Note: It is recommended to use a virtual environment for production usage (see [virtualenv documentation](http://www.virtualenv.org/en/latest/)).
+- Run `updiancmd runserver <local ip address>` or
+  configure your webserver to serve updian.wsgi (the latter is recommended when
+  you serve Updian on a WAN interface).
+- Open http://yourhost:5000/ in your web browser.
+- Click on "Servers" and add your servers.
+- For test purposes run `updiancmd collect` on your shell
+    - You should see some output and the updates (if there were any) should be visible in the web interface.
+- Run `updiancmd update` if you want Updian to update your chosen servers (from the queue).
+- Add cronjobs for full automatic updates (`crontab -e`). Example crontab entries:
 
-Example crontab entries:
+    0 8 * * * /var/www/updian/updiancmd collect > /dev/null 2>&1 # (collect updates daily at 8 am)
+    0 9 * * * /var/www/updian/updiancmd update > /dev/null 2>&1 # (run updates daily at 9 am)
 
-    0 8 * * * php /var/www/updian/cron_collect.php > /dev/null 2>&1 # (collect updates daily at 8 am)
-    0 9 * * * php /var/www/updian/cron_updates.php > /dev/null 2>&1 # (run updates daily at 9 am)
+- Optional: To use Updian's builtin HTTP basic authentication run `updiancmd setpw` to create one or more logins.
 
 
-UPDATING FROM OLD SERVER.TXT FORMAT (UPDIAN v0.4 AND OLDER)
+Example configuration using Apache HTTPd 2.x with mod\_wsgi
 -----------------------------------------------------------
 
-- Run `php convert_serverlist.php`
+To use mod\_wsgi on the Apache2 web server you can use something along the
+following lines in your virtual host configuration:
+
+    <IfModule mod_wsgi.c>
+        WSGIScriptAlias /updian /var/www/updian/updian.wsgi
+        WSGIPassAuthorization On
+
+        WSGIDaemonProcess updian-webif python-path=/var/www/updian home=/var/www/updian
+        WSGIProcessGroup updian-webif
+
+        Alias /updian/static /var/www/updian/updian/frontend/static
+
+        <Directory /var/www/updian/updian/frontend/static>
+            Order allow,deny
+            Allow from all
+        </Directory>
+    </IfModule>
+
+If you have installed Updian's dependencies into a virtual environment you
+should add its site-packages directory to the python-path of the daemon process:
+
+    WSGIDaemonProcess updian-webif python-path=/yourvenv/lib/python2.6/site-packages:/var/www/updian home=/var/www/updian
+
+You can also use `WSGIPythonHome` to set an alternative Python interpreter for
+mod\_wsgi to use globally (see: [WSGIPythonHome documentation](http://code.google.com/p/modwsgi/wiki/ConfigurationDirectives#WSGIPythonHome)).
+
+
+Updating from old server.txt format (used in Updian v0.4 and older)
+-------------------------------------------------------------------
+
+- Run `updiancmd convert_sl`
 - Update your config.php to point to the newly created file
 
 
-CHECKRESTART FOR UPDATED SERVICES ON REMOTE MACHINES
+Checkrestart for updated services on remote machines
 ----------------------------------------------------
 
 Since v0.3 Updian can check if there are services running on remote machines
@@ -99,19 +122,19 @@ that need to be restartet. That is often needed if libs used by many
 programs (libssl i.e.) have been updated on the remote machine. After that
 it is i.e. required to restart apache or postfix.
 
-Updian uses the script 'checkrestart' from the package 'debian-goodies' for
-that. Just apply 'apt-get install debian-goodies' on the desired remote
+Updian uses the script `checkrestart` from the package `debian-goodies` for
+that. Just apply `apt-get install debian-goodies` on the desired remote
 machines.
 
 It does, in short, anything like this to find out which procs using
-deprecated libs: lsof -n | egrep -i "(DEL|inode)"
+deprecated libs: `lsof -n | egrep -i "(DEL|inode)"`
 
-Updian writes the output from 'checkrestart' to <server>\_checkrestart.log
+Updian writes the output from `checkrestart` to <server>\_checkrestart.log
 (see "Logs" in webfrontend).
 
 
-UPDIAN RESTRICED SHELL - updian-rsh
------------------------------------
+Updian restricted shell - updian-rsh
+------------------------------------
 
 Updian's default mode of operation gives the updian server unlimited root access
 to all servers.
