@@ -25,14 +25,6 @@ a:hover {
     color: dodgerblue;
 }
 
-tbody > tr {
-    background: #ffffff;
-}
-
-tbody > tr:hover {
-    background: #cecece;
-}
-
 #main_menu {
     list-style-type: none;
     overflow: hidden;
@@ -47,8 +39,16 @@ tbody > tr:hover {
     margin: 0.5em;
 }
 
-#update_overview {
+.hovertable {
     width: 600px;
+}
+
+.hovertable tbody > tr {
+    background: #ffffff;
+}
+
+.hovertable tbody > tr:hover {
+    background: #cecece;
 }
 
 .aligncenter {
@@ -78,7 +78,6 @@ tbody > tr:hover {
 }
 
 #serverlist {
-    width: 100%;
     line-height: 1.8em;
 }
 

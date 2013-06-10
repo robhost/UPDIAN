@@ -6,7 +6,7 @@
     <h3>Update queue is empty.</h3>
 {% else %}
     <h3>Servers in queue (will be updated on next run):</h3>
-    <table id="update_overview">
+    <table class="hovertable">
     {% for host in updatequeue %}
         <tr>
             <td>{{ host.name }}</td>
