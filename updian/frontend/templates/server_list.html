@@ -1,23 +1,45 @@
 {% extends "base.html" %}
 
+{% block head %}
+<script type="text/javascript">
+    $(document).ready(function() {
+        $("#serverlist").dataTable({
+            "bPaginate": false,
+            "bFilter": true,
+            "bAutoWidth": true,
+            "bInfo": true,
+            "bSort": false,
+            "oLanguage": {
+                "sSearch": "Filter host list:",
+            },
+        });
+    });
+</script>
+{% endblock %}
+
 {% block content %}
 <div>
     <h3>View/Edit <i>{{serverlist_file}}</i>:</h3>
     <a href="{{url_for('edit_server')}}">Add a new host</a>
-    <ul class="serverlist">
+    <table id="serverlist">
+        <thead><tr><th></th><th></th></tr></thead>
+        <tbody>
         {% for server in serverlist %}
-        <li>
-            {{server.hostname}}
-            <form method="get" action="{{url_for('edit_server', hostname=server.hostname)}}">
-                <input type="submit" value="Edit host">
-            </form>
-            <form method="post" action="{{url_for('delete_server')}}">
-                <input type="hidden" name="hostname" value="{{server.hostname}}">
-                <input type="hidden" name="_csrf_token" value="{{csrf_token()}}">
-                <input type="submit" onclick="javascript:return confirm('Delete Host {{server.hostname}}');" value="Delete host">
-            </form>
-        </li>
+        <tr>
+            <td>{{server.hostname}}</td>
+            <td>
+                <form method="get" action="{{url_for('edit_server', hostname=server.hostname)}}">
+                    <input type="submit" value="Edit host">
+                </form>
+                <form method="post" action="{{url_for('delete_server')}}">
+                    <input type="hidden" name="hostname" value="{{server.hostname}}">
+                    <input type="hidden" name="_csrf_token" value="{{csrf_token()}}">
+                    <input type="submit" onclick="javascript:return confirm('Delete Host {{server.hostname}}');" value="Delete host">
+                </form>
+            </td>
+        </tr>
         {% endfor %}
-    </ul>
+        </tbody>
+    </table>
 </div>
 {% endblock %}

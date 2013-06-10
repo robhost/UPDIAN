@@ -25,8 +25,12 @@ a:hover {
     color: dodgerblue;
 }
 
-.serverlist form {
-    display: inline;
+tbody > tr {
+    background: #ffffff;
+}
+
+tbody > tr:hover {
+    background: #cecece;
 }
 
 #main_menu {
@@ -45,14 +49,6 @@ a:hover {
 
 #update_overview {
     width: 600px;
-}
-
-#update_overview tr {
-    background: #ffffff;
-}
-
-#update_overview tr:hover {
-    background: #cecece;
 }
 
 .aligncenter {
@@ -77,12 +73,21 @@ a:hover {
     margin-bottom: 4px;
 }
 
-.serverlist {
+.needsrestart {
+    background: yellow;
+}
+
+#serverlist {
+    width: 100%;
     line-height: 1.8em;
 }
 
-.needsrestart {
-    background: yellow;
+#serverlist_filter {
+    margin: 0.5em 0;
+}
+
+#serverlist form {
+    display: inline;
 }
 
 .version_number {

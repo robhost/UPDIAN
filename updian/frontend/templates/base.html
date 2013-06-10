@@ -2,6 +2,8 @@
 <html>
 <head>
     <title>{% block title %}Updian{% endblock %}</title>
+    <script src="{{ url_for('static', filename='js/jquery-2.0.2.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/jquery.dataTables.min.js') }}"></script>
     <script type="text/javascript">
         function ask(url, txt) {
             if(confirm(txt))
@@ -10,7 +12,7 @@
     </script>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
     <meta http-equiv="pragma" content="no-cache">
-     {% block head %}{% endblock %}
+    {% block head %}{% endblock %}
 </head>
 <body>
     <h1><img src="{{ url_for('static', filename='logo.png') }}" alt="UPDIAN"><span class="version_number">v0.6</span><a name="top"></a></h1>
