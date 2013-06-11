@@ -53,31 +53,13 @@ case "$command" in
         exec $PYTHON -m updian.cron.update
         ;;
     convert_sl)
-        exec $PYTHON <<EOF
-from __future__ import print_function
-import os
-from updian import config, serverlist
-
-sl = config.serverlist_file
-if sl.endswith('.txt'):
-    print('Converting...')
-    slnew = sl.replace('.txt', '.json')
-    if os.path.exists(slnew):
-        slnew += '.convnew'
-    serverlist.convert_from_csv(sl, slnew)
-    print('Saving to file %s.' % slnew)
-    print('Now please check the converted file and adjust your config file accordingly')
-else:
-    print('Server list was apparently already converted to JSON. Aborting.')
-EOF
+        exec $PYTHON -m updian.cmd.convert_serverlist
         ;;
     setpw)
-        cd $(dirname $0)
         exec $PYTHON -m updian.passwd
         ;;
     runserver)
-        cd $(dirname $0)
-        exec $PYTHON runserver.py $@
+        exec $PYTHON -m updian.cmd.runserver $@
         ;;
     *)
         echo "Error: Unknown command \`$command\` specified." >&2
