@@ -29,10 +29,10 @@ if sys.version_info[:2] < (2, 6) or sys.version_info[0] > 2:
     sys.stderr.write(msg)
     sys.exit(1)
 
-requires = ['setuptools', 'Fabric>=1.6.0', 'Flask>=0.9', 'flask-csrf>=0.9.2']
-
 def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
+
+requires = read('requirements.txt').splitlines()
 
 CLASSIFIERS = [
     'Development Status :: 4 - Beta',
@@ -48,8 +48,8 @@ setup(
     version = '0.6',
     license = 'GPLv2+ <http://www.gnu.org/licenses/gpl-2.0.en.html>',
     url = 'http://www.robhost.de/updian/',
-    description = "A program for monitoring and executing updates on other systems",
-    long_description = read('README.md'),
+    description = "A program for monitoring and executing updates on remote systems",
+    long_description = read('README.rst'),
     classifiers = CLASSIFIERS,
     author = "Robert Klikics",
     author_email = "rk@robhost.de",

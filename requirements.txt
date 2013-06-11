@@ -1,0 +1,4 @@
+Fabric>=1.6.0
+Flask>=0.9
+flask-csrf>=0.9.2
+flask-basicauth>=0.1.1

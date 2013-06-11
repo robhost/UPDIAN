@@ -1,5 +1,6 @@
 .*.sw?
 *.pyc
 updian.passwd
+server.json
 dist/
 UPDIAN.egg-info/
