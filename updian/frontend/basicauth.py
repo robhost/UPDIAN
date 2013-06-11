@@ -11,6 +11,9 @@ class BasicAuth(flask.ext.basicauth.BasicAuth):
         super(BasicAuth, self).__init__(app)
 
     def check_credentials(self, username, password):
-        pwhash = passwd.get_user_from_passwd(username)[1]
+        user = passwd.get_user_from_passwd(username)
 
-        return passwd.hashpw(password, pwhash) == pwhash
+        if user is not None:
+            return passwd.hashpw(password, user[1]) == user[1]
+
+        return False
