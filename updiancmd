@@ -20,7 +20,7 @@
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 #  USA
 
-PYTHON=/usr/bin/python
+PYTHON=python
 
 usage () {
     echo "Usage: $0 <command>"
@@ -31,6 +31,7 @@ Usable commands:
     collect     Collect updates from configured servers
     update      Execute updates on configured servers
     convert_sl  Convert old text-based server list to new JSON format
+    init_cfg    Initialize new configuration file (config.ini)
     setpw       Set password for a user
     runserver   Start the builtin HTTP server
 EOF
@@ -60,6 +61,9 @@ case "$command" in
         ;;
     runserver)
         exec $PYTHON -m updian.cmd.runserver $@
+        ;;
+    init_cfg)
+        exec $PYTHON -c 'import updian.config as c; c.write_example_config()'
         ;;
     *)
         echo "Error: Unknown command \`$command\` specified." >&2
