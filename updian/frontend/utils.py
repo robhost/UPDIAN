@@ -58,7 +58,9 @@ def formatted_mtime(filename):
     try:
         mtime = os.path.getmtime(filename)
     except os.error:
-        if os.path.exists(statfile):
+        if os.path.exists(filename):
             raise
+        else:
+            return None
 
     return time.strftime(timeformat, time.localtime(mtime))

@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-<p>Last update cronjob run: {{ lastrun|default('never') }}</p>
+<p>Last update cronjob run: {{ lastrun|default('never', true) }}</p>
 {% if updatequeue is not defined %}
     <h3>Update queue is empty.</h3>
 {% else %}
