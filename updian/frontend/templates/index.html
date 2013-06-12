@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-<p>Data collected on: {{ lastupdate|default('never') }}</p>
+<p>Data collected on: {{ lastupdate|default('never', true) }}</p>
 {% if updatelist is not defined %}
     <h3>No updates available.</h3>
 {% else %}
