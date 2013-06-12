@@ -20,107 +20,85 @@
 #  USA
 '''Updian configuration initialization and config file parsing'''
 
-import types
+from ConfigParser import RawConfigParser
 
 # configuration defaults
-serverlist_file = 'server.json'
-data_dir = 'data'
-todo_dir = 'todo'
-log_dir = 'log'
-keep_cfgs = True
-updian_uri = 'http://192.168.0.254/updian'
-mail_active = True
-mail_to = 'root@localhost'
-mail_from = 'updian@localhost'
+option_defaults = dict(
+    serverlist_file = 'server.json',
+    data_dir = 'data',
+    todo_dir = 'todo',
+    log_dir = 'log',
+    updian_uri = 'http://192.168.0.254/updian',
+    mail_active = True,
+    mail_to = 'root@localhost',
+    mail_from = 'updian@localhost',
+    concurrency = 20,
+    autodetect_backend = True,
+    allow_unauthenticated_packages = False)
+
+main_section = 'UPDIAN'
+
+example_config = (
+'''[%s]
+# file containing the server list
+serverlist_file = server.json
+
+# url to your installation (used for hyperlinking in mails)
+updian_url = http://192.168.0.254/updian/
+
+# send infomails: true|false
+mail_active = true
+# recipient of infomails, should be your valid email
+mail_to     = server@domain.tld
+# sender of informails, defaults to updian@localhost, have a look at "hostname -f"
+mail_from   = updian@domain.tld
+
+# concurrency options (how man processes to for for update command)
 concurrency = 20
-autodetect_backend = True
-allow_unauthenticated_packages = False
 
-_TRANSLATION_TABLE = {
-    '$cfg_file': 'serverlist_file',
-    '$log_path': 'log_dir',
-}
+# backend auto-detection
+# if this is set to false, the default backend (apt) will be used for hosts w/o an explicit backend configuration
+autodetect_backend = true
 
-def update(option_dict):
-    '''Update global configuration from the option_dict dictionary.
+# allow unauthenticated packages
+allow_unauthenticated_packages = false
+''' % (main_section))
 
-    The dictionary may include keys read from the config.php file
-    (starting with '$'). Those legacy keys will be automatically
-    converted to the appropriate option name.
-    Quotes and double quotes are automatically stripped from options
-    of type string.
+def write_example_config(filename='config.ini'):
+    '''Write a configuration example to a file.'''
+    with open(filename, 'w') as fp:
+        fp.write(example_config)
 
-    '''
-    if not option_dict:
-        return
+def read_config_ini(filename='config.ini'):
+    '''Read config file and update global configuration variables.'''
+    cp = RawConfigParser()
+
+    found = cp.read(filename)
+
+    if len(found) == 0:
+        # TODO no config files loaded, using defaults only
+        pass
+
+    def get_option(option):
+        default = option_defaults[option]
+
+        if not cp.has_option(main_section, option):
+            return default
+
+        if isinstance(default, bool):
+            return cp.getboolean(main_section, option)
+        elif isinstance(default, int):
+            return cp.getint(main_section, option)
+        elif isinstance(default, float):
+            return cp.getfloat(main_section, option)
+
+        return cp.get(main_section, option)
 
     module_vars = globals()
 
-    # lots of legacy cruft here
-    for option, value in option_dict.iteritems():
-        # we don't need log_path_rel b/c it's redundant
-        if option == '$log_path_rel':
-            continue
-
-        try:
-            option = _TRANSLATION_TABLE[option]
-        except:
-            if option.startswith('$'):
-                option = option[1:]
-
-        # raise an error if we try to set an unknown option
-        if option not in module_vars:
-            raise NameError('Unknown configuration option "%s".' % option)
-
-        # convert booleans
-        if (type(module_vars[option]) is types.BooleanType and
-            type(value) is types.StringType):
-            if value.lower() == 'true':
-                value = True
-            else:
-                value = False
-        elif (type(module_vars[option]) is types.IntType and
-              type(value) is types.StringType):
-            value = int(value)
-        elif type(module_vars[option]) is types.StringType and (
-                value.startswith("'") or value.startswith('"')):
-            value = value.strip('\'"') # strip php string delimiters
-
-        # check for type compatibility
-        if type(module_vars[option]) != type(value):
-            raise TypeError('Option "%s" must be of type %s.' %
-                            (option, type(module_vars[option]).__name__))
-
-        module_vars[option] = value
-
-def read_config_php(config_php='config.php'):
-    '''Read updian's config.php file and set configuration variables.
-
-    Parsing is only implemented rudimentary. The parser looks for lines
-    starting with '$' and splits the line at the assignment-operator
-    (=).
-
-    Keyword arguments:
-    config_php -- file object or path string of updian's config file
-
-    '''
-    def read_config(fp):
-        cfg = {}
-        for l in (l.split(';', 1)[0] for l in fp.readlines() if
-                  l.startswith('$')):
-            k, v = l.split('=', 1)
-            cfg[k.strip()] = v.strip()
-
-        return cfg
-
-    if isinstance(config_php, file):
-        update(read_config(config_php))
-    elif isinstance(config_php, str):
-        with open(config_php, 'r') as fp:
-            update(read_config(fp))
-    else:
-        raise TypeError('config_php must be a file or string (containing a '
-                        'file path).')
+    for option in option_defaults:
+        v = get_option(option)
+        module_vars[option] = v
 
 # initialize on import
-read_config_php()
+read_config_ini()
