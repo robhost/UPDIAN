@@ -151,9 +151,12 @@ def _read_from_file_format_json(fp):
     def list_entry_hook(dct):
         return Server(**dct)
 
-    slist = ServerList(json.load(fp, object_hook=list_entry_hook))
+    deserialized_data = json.load(fp, object_hook=list_entry_hook)
 
-    return slist
+    if not isinstance(deserialized_data, list):
+        raise ValueError('Deserialized object was no list.')
+
+    return ServerList(deserialized_data)
 
 def convert_from_csv(old_server_file='server.txt', new_server_file='server.json'):
     if not os.path.exists(old_server_file):
