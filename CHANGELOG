@@ -1,6 +1,13 @@
-UPDIAN - UpdateDebian 
+Updian
 
-Minimalistic Debian Package Upgrade Tool with Web-Frontend by Robert Klikics, RobHost GmbH [rk@robhost.de], 2007-2013
+Minimalistic package upgrade tool with web frontend by Robert Klikics, RobHost GmbH [rk@robhost.de], 2007-2013
+
+v0.6
+
+- rewrote all functionality in python
+- removed multi-ssh functionality (because there are dedicated tools like multissh or clusterssh)
+- added HTTP basic authentication directly to UPDIAN so a webserver is not needed anymore
+- changed configuration format to ini-like format (use 'updiancmd init_cfg' to create an example configuration)
 
 v0.5
 

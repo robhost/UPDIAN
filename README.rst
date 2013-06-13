@@ -1,5 +1,5 @@
-Updian v0.6 - UpdateDebian
-==========================
+Updian v0.6
+===========
 
 RobHost GmbH [support@robhost.de], 2007-2013
 
@@ -23,8 +23,8 @@ Updian does not need any databases, every data is stored by (mostly) empty
 flatfiles. It can manage a high number of servers, I've tested/used it with
 100+ servers without any problems ...
 
-Actually, Updian only does "apt-get upgrade", not "dist-upgrade". So it's a
-good idea to run "apticron" or anything in parallel on the remote machines to
+Actually, Updian only does ``apt-get upgrade``, not ``dist-upgrade``. So it's a
+good idea to run ``apticron`` or anything in parallel on the remote machines to
 keep informed about upcoming dist-upgrades. Apticron is also good for checking
 the correctness of Updian - it mails you the updates every day including
 changelog. These you can now install with Updian. If Updian is working
@@ -47,15 +47,17 @@ Requirements
   supported)
 - Exchanged SSH-publickeys between the local machine running Updian and the
   remote servers
+
     - that means you can login from the machine running Updian to the remote
-      server via "ssh <server>" without entering a password
-    - Howto: On the machine running Updian:
-        - ``ssh-keygen -t rsa``
-        - ``cat ~/.ssh/id_dsa.pub |
-          ssh root@remote_server cat - ">>" ~/.ssh/authorized_keys``
-        - OR use ``ssh-copy-id <server>``
+      server via ``ssh <remote-server>`` without entering a password
+    - Howto: On the machine running Updian::
+
+        ssh-keygen -t rsa
+        cat ~/.ssh/id_rsa.pub | ssh remote-user@remote-server cat - ">>" ~/.ssh/authorized_keys
+        # or 'ssh-copy-id remote-server'
+
 - Optional: Web server with WSGI support or
-  a separate WSGI application server (local-side)
+  a separate WSGI application server (local-side, see below)
 
 
 Installation
@@ -64,45 +66,59 @@ Installation
 From PyPI or from archive via pip (recommended)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. TODO
+- Run ``pip install updian`` (or ``pip install <archive>``)
+- Change directory to where Updian shall be installed (Updian's home directory)
+- Run ``fab -f <fabfile_path>`` and follow the onscreen instructions.
+  You can find the fabfile path using the following command::
 
-From archive (manually)
-^^^^^^^^^^^^^^^^^^^^^^^
+    python -c 'from updian.fabfile import __file__ as f; from os.path import *; print abspath(dirname(f)) + "/fabfile.py"'
 
-- Unzip the files to a folder on your server (the machine where Updian should
+- Add cronjobs for fully automated updates (see below)
+
+From snapshot archive (manually)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+- Extract the files to a folder on your server (the machine where Updian should
   run).
-- Edit the config.php according to the instructions inside the file.
-- Make sure the data, log and todo directories are writeable by the user
-  that will be running updian.
-- Install Updian's dependencies Fabric, Flask, flask-csrf and flask-basicauth
-  (e.g. via pip: ``pip install Fabric>=1.6.0 Flask>=0.9 flask-csrf>=0.9.2
-  flask-basicauth>=0.1.1``).
+- Run ``updiancmd init_cfg`` to create an example configuration file.
+- Edit the file config.ini according to the instructions inside the file.
+- Install Updian's dependencies listed in requirements.txt
+  (e.g. via pip: ``pip install -r requirements.txt``).
   Note: It is recommended to use a virtual environment for production usage (see
   `virtualenv documentation`_).
 - Optional: Use ``updiancmd setpw`` to create one or more users for basic
   authentication. If you skip this everyone on the network you serve Updian on
-  will be able to access it without restriction.
-- Run ``updiancmd runserver <local ip address>``.
+  will be able to access it without restriction as long as you don't add any
+  protection upstream.
+- Run ``updiancmd runserver <local ip address>`` (omitting the ip address
+  argument leads to serving Updian on the loopback interface).
 - Open http://yourhost:5000/ in your web browser.
 - Click on "Servers" and add your servers.
 - For test purposes run ``updiancmd collect`` on your shell.
+
     - You should see some output and (if there are updates) the updates should
       be visible via the web interface.
 - Run ``updiancmd update`` if you want Updian to update your chosen servers.
-- Add cronjobs for full automatic updates (``crontab -e``). Example crontab
+- Add cronjobs for fully automated updates (``crontab -e``). Example crontab
   entries::
 
     0 8 * * * /var/www/updian/updiancmd collect > /dev/null 2>&1 # (collect updates daily at 8 am)
     0 9 * * * /var/www/updian/updiancmd update > /dev/null 2>&1 # (run updates daily at 9 am)
 
+- If you plan on serving Updian's web interface on an untrusted network
+  configure your web server or a WSGI container to serve it using the file
+  ``updian.wsgi``. For further information see `Flask Deployment Options`_.
+
 .. _virtualenv documentation: http://www.virtualenv.org/en/latest/
+.. _Flask Deployment Options: http://flask.pocoo.org/docs/deploying/
 
 
 Example configuration using Apache HTTPd 2.x with mod\_wsgi
 -----------------------------------------------------------
 
 To use mod\_wsgi on the Apache2 web server you can use something along the
-following lines in your virtual host configuration::
+following lines in your virtual host configuration (Assuming you installed
+Updian in /var/www/updian)::
 
     <IfModule mod_wsgi.c>
         WSGIScriptAlias /updian /var/www/updian/updian.wsgi
@@ -165,8 +181,7 @@ to all servers.
 updian-rsh is a shell script that can be used with ssh's forced command feature
 to limit the commands updian can execute over ssh. Then, even if the updian
 server is compromised, the intruder can only do one thing with your other
-servers: Update them. This means that the multi-ssh feature is also restriced to
-the commands allowed by updian-rsh.
+servers: Update them.
 
 To use it, copy updian-rsh to the machines you want to update, for example to
 /usr/local/bin.
@@ -182,7 +197,7 @@ so that it looks like this:
 
     command="/usr/local/bin/updian-rsh" ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEA8Yf[...]
 
-Now when you try to connect to that server with "ssh root@remote\_server"
+Now when you try to connect to that server with ``ssh root@remote_server``
 you should get the message
 
 ::
