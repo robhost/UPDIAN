@@ -95,8 +95,18 @@ def list_servers():
     if not serverlist_file.endswith('.json'):
         flash('Please convert your server.txt to server.json.')
 
-    serverlist = ServerList.from_file(serverlist_file)
-    serverlist.sort()
+    try:
+        serverlist = get_serverlist(serverlist_file)
+        serverlist.sort()
+    except ValueError as e:
+        e = 'There was an error decoding your server list file: %s\n' % e
+        e += 'Maybe you forgot to convert it from the old server.txt format?'
+        return critical_error(e)
+    except IOError:
+        flash('There was an error reading the server list file. '
+              'Creating empty server list. '
+              'It will be saved once you create the first server.')
+        serverlist = ServerList()
 
     template_data = dict(
         serverlist_file=serverlist_file,
@@ -109,7 +119,10 @@ def list_servers():
            methods=['GET', 'POST'])
 @app.route('/servers/edit/<hostname>', methods=['GET', 'POST'])
 def edit_server(hostname):
-    serverlist = ServerList.from_file(config.serverlist_file)
+    try:
+        serverlist = get_serverlist()
+    except IOError:
+        serverlist = ServerList()
 
     if hostname is None:
         server = Server(None)
@@ -154,7 +167,7 @@ def edit_server(hostname):
 
 @app.route('/servers/delete', methods=['POST'])
 def delete_server():
-    serverlist = ServerList.from_file(config.serverlist_file)
+    serverlist = get_serverlist()
 
     host_to_remove = request.form['hostname']
     serverlist.remove(Server(host_to_remove))
@@ -213,3 +226,7 @@ def delete_all_logfiles():
         delete_logfile(hostname)
 
     return redirect(url_for('list_logs'))
+
+@app.errorhandler(500)
+def critical_error(e):
+    return render_template('critical_error.html', error=e), 500

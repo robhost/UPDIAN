@@ -4,6 +4,7 @@ import time
 from glob import glob
 
 from .. import config
+from ..serverlist import ServerList
 
 def get_data_filename(hostname):
     return os.path.join(config.data_dir, hostname) + '.txt'
@@ -52,6 +53,12 @@ def get_update_details(hostname):
     return dict(host=hostname,
                 queued=is_queued(hostname),
                 updates=update_list)
+
+def get_serverlist(serverlist_file = None):
+    if serverlist_file is None:
+        serverlist_file = config.serverlist_file
+
+    return ServerList.from_file(serverlist_file)
 
 def formatted_mtime(filename):
     timeformat = '%B %d %Y %H:%M'
