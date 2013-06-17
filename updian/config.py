@@ -34,7 +34,8 @@ option_defaults = dict(
     mail_from = 'updian@localhost',
     concurrency = 20,
     autodetect_backend = True,
-    allow_unauthenticated_packages = False)
+    allow_unauthenticated_packages = False,
+    secret_key = 'SECRET')
 
 main_section = 'UPDIAN'
 
@@ -42,6 +43,9 @@ example_config = (
 '''[%s]
 # file containing the server list
 serverlist_file = server.json
+
+# secret key used for CSRF and cookie encryption
+secret_key = {secret_key}
 
 # url to your installation (used for hyperlinking in mails)
 updian_url = http://192.168.0.254/updian/
@@ -66,8 +70,15 @@ allow_unauthenticated_packages = false
 
 def write_example_config(filename='config.ini'):
     '''Write a configuration example to a file.'''
+    from random import choice
+    from string import ascii_letters, digits
+
+    secret_len = 32
+    secret = ''.join([choice(ascii_letters + digits) for _ in
+                      range(secret_len)])
+
     with open(filename, 'w') as fp:
-        fp.write(example_config)
+        fp.write(example_config.format(secret_key = secret))
 
 def read_config_ini(filename='config.ini'):
     '''Read config file and update global configuration variables.'''
