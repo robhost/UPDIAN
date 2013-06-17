@@ -50,9 +50,9 @@ Requirements
 - Exchanged SSH-publickeys between the local machine running Updian and the
   remote servers
 
-    - that means you can login from the machine running Updian to the remote
-      server via ``ssh <remote-server>`` without entering a password
-    - Howto: On the machine running Updian::
+  * that means you can login from the machine running Updian to the remote
+    server via ``ssh <remote-server>`` without entering a password
+  * Howto: On the machine running Updian::
 
         ssh-keygen -t rsa
         cat ~/.ssh/id_rsa.pub | ssh remote-user@remote-server cat - ">>" ~/.ssh/authorized_keys
@@ -94,8 +94,9 @@ From snapshot archive (manually)
 - Click on "Servers" and add your servers.
 - For testing purposes run ``updiancmd collect`` on your shell.
 
-    - You should see some output and (if there are updates) the updates should
-      be visible via the web interface.
+  * You should see some output and (if there are updates) the updates should
+    be visible via the web interface.
+
 - Run ``updiancmd update`` if you want Updian to update your chosen servers.
 - Add cronjobs for fully automated updates (see `Example crontab entries`_).
 - If you plan on serving Updian's web interface on an untrusted network
