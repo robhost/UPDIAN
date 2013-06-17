@@ -120,7 +120,7 @@ Example configuration using Apache HTTPd 2.x with mod\_wsgi
 
 To use mod\_wsgi on the Apache2 web server you can use something along the
 following lines in your virtual host configuration (Assuming you installed
-Updian in /var/www/updian)::
+Updian in /var/www/updian and want to serve it on ``http://host/updian``)::
 
     <IfModule mod_wsgi.c>
         WSGIScriptAlias /updian /var/www/updian/updian.wsgi
@@ -129,9 +129,9 @@ Updian in /var/www/updian)::
         WSGIDaemonProcess updian-webif python-path=/var/www/updian home=/var/www/updian
         WSGIProcessGroup updian-webif
 
-        Alias /updian/static /var/www/updian/updian/frontend/static
+        Alias /updian/static /var/www/updian/static
 
-        <Directory /var/www/updian/updian/frontend/static>
+        <Directory /var/www/updian/static>
             Order allow,deny
             Allow from all
         </Directory>
