@@ -1,5 +1,5 @@
-Updian v0.6
-===========
+Updian
+======
 
 RobHost GmbH [support@robhost.de], 2007-2013
 
@@ -14,14 +14,14 @@ What is it good for?
 Updian is a minimalistic update-engine for DEBIAN GNU/Linux based machines
 (and other flavours like Ubuntu based on APT) and, since v0.4, for machines
 with YUM such as CentOS. You can use it to maintain all your machines
-remotely over a simple webinterface written in PHP. There are 2 cronjobs,
+remotely over a simple web interface written in Python. There are 2 cronjobs,
 one checks for updates, another does them. You can choose from the
 webinterface which servers to update (it shows up the packages) and read
 logs after the updates are done.
 
-Updian does not need any databases, every data is stored by (mostly) empty
-flatfiles. It can manage a high number of servers, I've tested/used it with
-100+ servers without any problems ...
+Updian does not need any databases, all data is stored in (mostly empty)
+flatfiles. It can manage a high number of servers, we've tested/used it with
+100+ servers without any problems...
 
 Actually, Updian only does ``apt-get upgrade``, not ``dist-upgrade``. So it's a
 good idea to run ``apticron`` or anything in parallel on the remote machines to
@@ -38,11 +38,11 @@ updates made. The logfiles are available through the webfrontend.
 Requirements
 ------------
 
+- Any Linux distribution on the machine which runs Updian (local-side)
 - Debian GNU/Linux or other apt-running systems (Ubuntu, Knoppix ...) or
   yum-running systems (CentOS, RHEL, Fedora Core ...) on the remote-side
-- Any Linux-Distribution on the machine which runs Updian (local-side)
 - Python 2.6 or newer (local-side)
-- A crond running (local-side)
+- a crond if you want to automate updian's checking and updating (local-side)
 - Access as root to all involved machines (gaining root via sudo is also
   supported)
 - Exchanged SSH-publickeys between the local machine running Updian and the
@@ -63,17 +63,13 @@ Requirements
 Installation
 ------------
 
-From PyPI or from archive via pip (recommended)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Using Updian's fabfile (recommended)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-- Run ``pip install updian`` (or ``pip install <archive>``)
 - Change directory to where Updian shall be installed (Updian's home directory)
-- Run ``fab -f <fabfile_path>`` and follow the onscreen instructions.
-  You can find the fabfile path using the following command::
-
-    python -c 'from updian.fabfile import __file__ as f; from os.path import *; print abspath(dirname(f)) + "/fabfile.py"'
-
-- Add cronjobs for fully automated updates (see below)
+- Download the `latest fabfile <http://www.robhost.de/updian/fabfile.py>`_
+- Run ``fab`` and follow the onscreen instructions.
+- Add cronjobs for fully automated updates (see `Example crontab entries`_).
 
 From snapshot archive (manually)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -94,17 +90,12 @@ From snapshot archive (manually)
   argument leads to serving Updian on the loopback interface).
 - Open http://yourhost:5000/ in your web browser.
 - Click on "Servers" and add your servers.
-- For test purposes run ``updiancmd collect`` on your shell.
+- For testing purposes run ``updiancmd collect`` on your shell.
 
     - You should see some output and (if there are updates) the updates should
       be visible via the web interface.
 - Run ``updiancmd update`` if you want Updian to update your chosen servers.
-- Add cronjobs for fully automated updates (``crontab -e``). Example crontab
-  entries::
-
-    0 8 * * * /var/www/updian/updiancmd collect > /dev/null 2>&1 # (collect updates daily at 8 am)
-    0 9 * * * /var/www/updian/updiancmd update > /dev/null 2>&1 # (run updates daily at 9 am)
-
+- Add cronjobs for fully automated updates (see `Example crontab entries`_).
 - If you plan on serving Updian's web interface on an untrusted network
   configure your web server or a WSGI container to serve it using the file
   ``updian.wsgi``. For further information see `Flask Deployment Options`_.
@@ -113,8 +104,17 @@ From snapshot archive (manually)
 .. _Flask Deployment Options: http://flask.pocoo.org/docs/deploying/
 
 
+Example crontab entries
+^^^^^^^^^^^^^^^^^^^^^^^
+
+::
+
+    0 8 * * * /var/www/updian/updiancmd collect > /dev/null 2>&1 # (collect updates daily at 8 am)
+    0 9 * * * /var/www/updian/updiancmd update > /dev/null 2>&1 # (run updates daily at 9 am)
+
+
 Example configuration using Apache HTTPd 2.x with mod\_wsgi
------------------------------------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 To use mod\_wsgi on the Apache2 web server you can use something along the
 following lines in your virtual host configuration (Assuming you installed
@@ -148,10 +148,10 @@ mod\_wsgi to use globally (see: `WSGIPythonHome documentation`_).
 
 
 Updating from old server.txt format (used in UPDIAN v0.4 and older)
--------------------------------------------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 - Run ``updiancmd convert_sl``
-- Update your config.php to point to the newly created file
+- For v0.5 only: Update your config.php to point to the newly created file
 
 
 Checkrestart for updated services on remote machines
