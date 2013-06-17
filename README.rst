@@ -42,6 +42,8 @@ Requirements
 - Debian GNU/Linux or other apt-running systems (Ubuntu, Knoppix ...) or
   yum-running systems (CentOS, RHEL, Fedora Core ...) on the remote-side
 - Python 2.6 or newer (local-side)
+- `Fabric <http://fabfile.org>`_ and `pip <http://pip-installer.org>`_ for
+  automated installation (local-side)
 - a crond if you want to automate updian's checking and updating (local-side)
 - Access as root to all involved machines (gaining root via sudo is also
   supported)
