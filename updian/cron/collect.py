@@ -44,6 +44,7 @@ from __future__ import print_function
 import email.mime.text
 import glob
 import os
+import random
 import smtplib
 import time
 
@@ -111,6 +112,7 @@ def collect_update_data(serverlist):
     '''
     clear_datadir()
 
+    random.shuffle(serverlist)
     metadata_mapping = dict(((s.hostname, s) for s in serverlist))
 
     with hide('everything'):
