@@ -1,0 +1,21 @@
+{% macro selectall_js(selectall_id="select_all_hosts", children_name="hosts") -%}
+<script type="text/javascript">
+    $(document).ready(function () {
+        var host_checkboxes = $(":checkbox[name='{{children_name}}']");
+        $("#{{selectall_id}}").click(function () {
+            var check_state = $(this).is(":checked");
+            host_checkboxes.filter(":enabled").prop("checked", check_state);
+        });
+
+        function inferQueueAllState() {
+            var check_state = false
+            if (host_checkboxes.length == host_checkboxes.filter(":checked").length)
+                check_state = true
+
+            $("#{{selectall_id}}").prop("checked", check_state)
+        }
+        host_checkboxes.click(inferQueueAllState);
+        inferQueueAllState();
+    });
+</script>
+{%- endmacro %}

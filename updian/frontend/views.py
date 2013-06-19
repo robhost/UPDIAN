@@ -99,12 +99,30 @@ def queue_host(hostname):
 
     return redirect(url_for('home'))
 
+@app.route('/queue/add', methods=['POST'])
+def queue_multiple_hosts():
+    hosts_to_add = request.form.getlist('hosts')
+
+    for host in hosts_to_add:
+        queue_host(host)
+
+    return redirect(url_for('home'))
+
 @app.route('/queue/remove/<hostname>')
 def dequeue_host(hostname):
     # TODO restrict to POST to get CSRF protection
     todo_file = get_todo_filename(hostname)
     if os.path.exists(todo_file):
         os.remove(todo_file)
+
+    return redirect(url_for('show_queue'))
+
+@app.route('/queue/remove', methods=['POST'])
+def dequeue_multiple_hosts():
+    hosts_to_dequeue = request.form.getlist('hosts')
+
+    for host in hosts_to_dequeue:
+        dequeue_host(host)
 
     return redirect(url_for('show_queue'))
 

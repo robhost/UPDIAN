@@ -1,11 +1,32 @@
 {% extends "base.html" %}
 
+{% from "macros/js_helpers.html" import selectall_js %}
+
+{% block head %}
+{{ selectall_js() }}
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#hide_already_queued").click(function () {
+            var trs = $(":checkbox[name='hosts']:disabled").parents("tr")
+
+            if ($(this).is(":checked"))
+                trs.fadeOut();
+            else
+                trs.fadeIn();
+        })
+    });
+</script>
+{% endblock %}
+
 {% block content %}
 <p>Data collected on: {{ lastupdate|default('never', true) }}</p>
 {% if updatelist is not defined %}
     <h3>No updates available.</h3>
 {% else %}
     <h3>Updates available:</h3>
+    <label><input type="checkbox" id="hide_already_queued" />Hide already queued hosts</label>
+    <form method="post" action="{{url_for('queue_multiple_hosts')}}">
+    <input type="hidden" name="_csrf_token" value="{{csrf_token()}}">
     <table class="hovertable">
     {% for host in updatelist %}
         <tr>
@@ -22,9 +43,22 @@
                 <a href="javascript:ask('{{url_for('queue_host', hostname=host.name)}}', 'Install updates for {{host.name}} when install-cronjob runs next time?')">add to queue</a>
             {% endif %}
             </td>
+            <td class="aligncenter">
+                <input type="checkbox" name="hosts" value="{{ host.name }}" {% if host.queued %}checked disabled{% endif %} />
+            </td>
         </tr>
     {% endfor %}
+        <tr>
+            <td colspan="2"></td>
+            <td class="alignright"><label for="select_all_hosts">Select all:</label></td>
+            <td class="aligncenter"><input type="checkbox" id="select_all_hosts"></td>
+        </tr>
+        <tr>
+            <td colspan="3"></td>
+            <td class="aligncenter"><input type="submit" value="Queue selected hosts"></td>
+        </tr>
     </table>
+    </form>
     <p><a href="javascript:ask('/queue/all', 'Add all updates on all {{updatelist|length}} servers to the queue?')">Add all {{updatelist|length}} servers to update queue</a></p>
     {% if update_details is defined %}
     <h3><a name="updates"></a>Updates for {{update_details.host}}

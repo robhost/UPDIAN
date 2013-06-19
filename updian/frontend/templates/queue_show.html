@@ -1,11 +1,19 @@
 {% extends "base.html" %}
 
+{% from "macros/js_helpers.html" import selectall_js %}
+
+{% block head %}
+{{ selectall_js() }}
+{% endblock %}
+
 {% block content %}
 <p>Last update cronjob run: {{ lastrun|default('never', true) }}</p>
 {% if updatequeue is not defined %}
     <h3>Update queue is empty.</h3>
 {% else %}
     <h3>Servers in queue (will be updated on next run):</h3>
+    <form method="post" action="{{url_for('dequeue_multiple_hosts')}}">
+    <input type="hidden" name="_csrf_token" value="{{csrf_token()}}">
     <table class="hovertable">
     {% for host in updatequeue %}
         <tr>
@@ -14,8 +22,20 @@
             <td class="alignright">
                 <a href="javascript:ask('{{url_for('dequeue_host', hostname=host.name)}}', 'Remove {{host.name}} from update queue?')">remove from queue</a>
             </td>
+            <td class="aligncenter">
+                <input type="checkbox" name="hosts" value="{{ host.name }}" />
+            </td>
         </tr>
     {% endfor %}
+        <tr>
+            <td colspan="2"></td>
+            <td class="alignright"><label for="select_all_hosts">Select all:</label></td>
+            <td class="aligncenter"><input type="checkbox" id="select_all_hosts"></td>
+        </tr>
+        <tr>
+            <td colspan="3"></td>
+            <td class="aligncenter"><input type="submit" value="Remove selected hosts"></td>
+        </tr>
     </table>
 {% endif %}
 {% endblock %}
