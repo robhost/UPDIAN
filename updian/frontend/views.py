@@ -244,7 +244,7 @@ def show_logfile(hostname):
     if not os.path.exists(logfile):
         flask.abort(404)
 
-    return flask.send_file(logfile, 'text/plain')
+    return flask.send_file(os.path.abspath(logfile), 'text/plain')
 
 @app.route('/logs/delete/<hostname>')
 def delete_logfile(hostname):
