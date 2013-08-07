@@ -51,7 +51,8 @@ def do_update(metadata_mapping):
     print('Host: %s, Port: %s, Engine: %s, Gateway: %s' %
           (env.host, env.port, backend, env.gateway))
 
-    env.shell = '/bin/bash -c'
+    env.use_shell = False
+    env.always_use_pty = False
 
     s = upgrade_packages(backend, use_sudo,
                          config.allow_unauthenticated_packages)

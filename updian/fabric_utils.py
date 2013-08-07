@@ -29,18 +29,11 @@ class UnknownBackendError(Exception):
 
 def _detect_backend():
     '''Detect package management backend.'''
-    supported_backends = {
-        '/usr/bin/apt-get': None,
-        '/usr/bin/yum': None,
-    }
+    supported_backends = ['/usr/bin/apt-get',
+                          '/usr/bin/yum']
 
-    for backend in supported_backends:
-        with fabric.api.settings(ok_ret_codes=[0, 1]):
-            p = fabric.api.run('test -x %s' % backend, quiet=True)
-        supported_backends[backend] = p.return_code
-
-    available_backends = [x for x in supported_backends if
-                          supported_backends[x] == 0]
+    available_backends = [backend for backend in supported_backends if
+                          command_is_available(backend)]
 
     # shouldn't really happen, but better be safe then sorry
     # as there are things like apt-rpm around
@@ -72,14 +65,26 @@ def update_check(backend=None, use_sudo=False):
         backend = _detect_backend()
 
     if backend == 'apt':
-        driver('DEBIAN_FRONTEND=noninteractive apt-get update -qq', quiet=True)
-        with fabric.api.settings(ok_ret_codes=[0, 1]):
-            ret = driver('DEBIAN_FRONTEND=noninteractive '
-                         'apt-get upgrade -s | '
-                         'grep Inst')
+        driver('/usr/bin/apt-get update -qq', quiet=True)
+        ret = driver('/usr/bin/apt-get upgrade -s')
+
+        class ReturnWrapper(object):
+            def __init__(self, ret):
+                lines = ret.stdout.splitlines(True)
+                self.stdout = ''.join([l for l in lines if 'Inst' in l])
+                self.subret = ret
+
+            def __getattribute__(self, name):
+                try:
+                    return object.__getattribute__(self, name)
+                except AttributeError:
+                    subret = object.__getattribute__(self, 'subret')
+                    return getattr(subret, name)
+
+        ret = ReturnWrapper(ret)
     elif backend == 'yum':
         with fabric.api.settings(ok_ret_codes=[0, 100]):
-            ret = driver('yum check-update -q')
+            ret = driver('/usr/bin/yum check-update -q')
     else:
         raise UnknownBackendError(backend)
 
@@ -101,18 +106,26 @@ def upgrade_packages(backend=None,
         backend = _detect_backend()
 
     if backend == 'apt':
-        command = ('PAGER=cat DEBIAN_FRONTEND=noninteractive '
-                   'apt-get --yes '
-                   '-o Dpkg::Options::="--force-confdef" '
-                   '-o Dpkg::Options::="--force-confold" upgrade')
+        args = ['--yes',
+                '-o Dpkg::Options::="--force-confdef"',
+                '-o Dpkg::Options::="--force-confold"']
         if allow_unauthenticated_packages:
-            command += ' --allow-unauthenticated '
+            args.append('--allow-unauthenticated')
+
+        command = 'DEBIAN_FRONTEND=noninteractive /usr/bin/apt-get %s upgrade' % ' '.join(args)
     elif backend == 'yum':
-        command = 'yum -y update'
+        command = '/usr/bin/yum -y update'
     else:
         raise UnknownBackendError(backend)
 
     return driver(command, pty=False)
+
+def command_is_available(command):
+    '''Check if command is available.'''
+    with fabric.api.settings(ok_ret_codes=[0, 1]):
+        existence_test = fabric.api.run('test -x %s' % command, quiet=True)
+
+    return existence_test.return_code == 0
 
 def checkrestart(use_sudo=False):
     '''Issue the checkrestart-command.'''
