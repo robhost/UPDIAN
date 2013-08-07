@@ -59,7 +59,7 @@
         </tr>
     </table>
     </form>
-    <p><a href="javascript:ask('/queue/all', 'Add all updates on all {{updatelist|length}} servers to the queue?')">Add all {{updatelist|length}} servers to update queue</a></p>
+    <p><a href="javascript:ask('{{url_for('queue_all_hosts')}}', 'Add all updates on all {{updatelist|length}} servers to the queue?')">Add all {{updatelist|length}} servers to update queue</a></p>
     {% if update_details is defined %}
     <h3><a name="updates"></a>Updates for {{update_details.host}}
         {% if not update_details.queued %}
