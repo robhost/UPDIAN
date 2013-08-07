@@ -35,7 +35,7 @@ def _detect_backend():
     available_backends = [backend for backend in supported_backends if
                           command_is_available(backend)]
 
-    # shouldn't really happen, but better be safe then sorry
+    # shouldn't really happen, but better be safe than sorry
     # as there are things like apt-rpm around
     if len(available_backends) > 1:
         raise RuntimeError('Auto-detection of package manager returned '
@@ -130,7 +130,7 @@ def command_is_available(command):
 def checkrestart(use_sudo=False):
     '''Issue the checkrestart-command.'''
     driver = fabric.api.sudo if use_sudo else fabric.api.run
-    command = 'checkrestart'
+    command = '/usr/sbin/checkrestart'
 
     return driver(command)
 

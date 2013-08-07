@@ -67,7 +67,7 @@ def do_update(metadata_mapping):
         log.write(log_entry)
     os.chmod(logfile, 0666)
 
-    if backend == 'apt':
+    if backend == 'apt' and command_is_available('/usr/sbin/checkrestart'):
         chkrst_res = checkrestart(use_sudo)
         output = chkrst_res.replace('\r', '').strip()
 
