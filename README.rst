@@ -150,7 +150,32 @@ mod\_wsgi to use globally (see: `WSGIPythonHome documentation`_).
 .. _WSGIPythonHome documentation: http://code.google.com/p/modwsgi/wiki/ConfigurationDirectives#WSGIPythonHome
 
 
-Updating from old server.txt format (used in UPDIAN v0.4 and older)
+Using Updian with sudo on remote machines
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+If you want to use a user account other than root Updian offers the option to
+use sudo to check for and execute updates. You just have to configure a user
+name other than root via the web interface for the servers you want to use sudo
+on.
+The user account on the remote side needs to be granted sudo rights without
+entering a password (NOPASSWD tag) for the relevant binaries (``/usr/bin/yum``
+on CentOS or ``/usr/bin/apt-get`` and ``/usr/sbin/checkrestart`` if installed
+on Debian/Ubuntu)
+Additionally the user must be able to set the ``DEBIAN_FRONTEND`` environment
+variable upon invoking sudo for apt-based distributions.
+Example sudoers entries (assuming Updian connects using the user account
+updian)::
+
+    # on Debian
+    Defaults:updian env_check+=DEBIAN_FRONTEND
+    updian ALL=NOPASSWD: /usr/bin/apt-get, /usr/sbin/checkrestart
+    # on RHEL/CentOS
+    updian ALL=NOPASSWD: /usr/bin/yum
+
+You may of course also use configurations that are less restrictive.
+
+
+Updating from old server.txt format (used in Updian v0.4 and older)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 - Run ``updiancmd convert_sl``
@@ -176,7 +201,7 @@ Updian writes the output from ``checkrestart`` to <server>\_checkrestart.log
 (see "Logs" in webfrontend).
 
 
-UPDIAN restricted shell - updian-rsh
+Updian restricted shell - updian-rsh
 ------------------------------------
 
 Updian's default mode of operation gives the updian server unlimited root access
