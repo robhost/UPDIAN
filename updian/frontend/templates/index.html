@@ -29,7 +29,7 @@
     <input type="hidden" name="_csrf_token" value="{{csrf_token()}}">
     <table class="hovertable">
     {% for host in updatelist %}
-        <tr>
+        <tr id="host_{{host.name}}">
             <td>{{ host.name }}</td>
             <td class="aligncenter">
                 <a href="{{url_for('home', server=host.name)}}#updates" title="show packages">
@@ -70,7 +70,7 @@
             <li>{{update}}</li>
         {% endfor %}
         </ul>
-    <a href="#top">back to top</a>
+    <a href="#host_{{update_details.host}}">back to server</a>
     {% endif %}
 {% endif %}
 {% endblock %}

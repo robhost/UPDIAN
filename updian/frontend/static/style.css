@@ -93,3 +93,7 @@ a:hover {
     position: relative;
     bottom: 35px;
 }
+
+tr[id^="host_"]:target {
+    background-color: #fffeb5;
+}
