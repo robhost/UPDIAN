@@ -25,7 +25,7 @@ import fabric.api
 class UnknownBackendError(Exception):
     '''Raised when an unsupported backend is used.'''
     def __init__(self, backend):
-        super().__init__('Unknown backend: %s' % backend)
+        super(Exception, self).__init__('Unknown backend: %s' % backend)
 
 def _detect_backend():
     '''Detect package management backend.'''
