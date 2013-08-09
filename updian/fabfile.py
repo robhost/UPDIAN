@@ -34,7 +34,18 @@ def warning(text, prefix='Warning:'):
     print(fabric.colors.yellow(prefix + ' ', bold=True) + text)
 
 def make_virtual_environment():
-    local('virtualenv --no-site-packages %s' % venv_path)
+    python_bin = sys.executable
+    if sys.version_info[0] == 2 and sys.version_info[1] > 6:
+        if os.path.exists('/usr/bin/python2.6'):
+            python_bin = '/usr/bin/python2.6'
+        else:
+            warning('You are running a Python version greater than 2.6 and '
+                    'there was no python2.6 executable found in /usr/bin. '
+                    'Performance could suffer as a result of this.\n'
+                    '[see: https://github.com/paramiko/paramiko/issues/191]')
+
+    local('virtualenv --python=%s --no-site-packages %s' %
+          (python_bin, venv_path))
 
 def activate_virtual_environment():
     activate_this = os.path.join(venv_path, 'bin/activate_this.py')
@@ -92,6 +103,10 @@ def make_dist():
 
 @task(default=True)
 def deploy():
+    if not confirm('Installing Updian to the current directory (%s). '
+                   'Continue?' % os.getcwd()):
+        return
+
     if 'VIRTUAL_ENV' not in os.environ:
         make_virtual_environment()
         activate_virtual_environment()
