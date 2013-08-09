@@ -22,7 +22,6 @@
 from __future__ import print_function
 
 import os
-import shutil
 import sys
 
 import fabric.colors
@@ -53,24 +52,15 @@ def make_runtime_directories():
     os.mkdir('data/', mode)
     os.mkdir('todo/', mode)
 
-def copy_frontend_data():
+def link_frontend_data():
     import updian
     base_dir = os.path.join(os.path.dirname(updian.__file__), 'frontend')
     cur_dir = os.getcwd()
 
-    for d in ['static', 'templates']:
+    for d in ['static']:
         src_dir = os.path.join(base_dir, d)
         dst_dir = os.path.join(cur_dir, d)
-        shutil.copytree(src_dir, dst_dir)
-
-def download_frontend_dependencies():
-    dep_urls = [
-        'http://code.jquery.com/jquery-2.0.2.min.js',
-        'http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/jquery.dataTables.min.js',
-    ]
-
-    for dep_url in dep_urls:
-        local('wget "%s" -P static/js' % dep_url)
+        os.symlink(src_dir, dst_dir)
 
 def initialize_config():
     print('Creating user for basic authentication...')
@@ -122,7 +112,6 @@ def deploy():
 
     install_updian()
     make_runtime_directories()
-    copy_frontend_data()
-    download_frontend_dependencies()
+    link_frontend_data()
     initialize_config()
     completion_message()

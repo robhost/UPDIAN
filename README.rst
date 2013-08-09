@@ -130,6 +130,9 @@ Updian in /var/www/updian and want to serve it on ``http://host/updian``)::
         WSGIDaemonProcess updian-webif python-path=/var/www/updian home=/var/www/updian
         WSGIProcessGroup updian-webif
 
+        # Add the following only if you installed via fabric
+        # (i.e. you have a symlink called static in /var/www/updian).
+        # It will serve static files directly via httpd.
         Alias /updian/static /var/www/updian/static
 
         <Directory /var/www/updian/static>
@@ -179,10 +182,10 @@ Updian writes the output from ``checkrestart`` to <server>\_checkrestart.log
 UPDIAN restricted shell - updian-rsh
 ------------------------------------
 
-Updian's default mode of operation gives the updian server unlimited root access
+Updian's default mode of operation gives the Updian server unlimited root access
 to all servers.
 updian-rsh is a shell script that can be used with ssh's forced command feature
-to limit the commands updian can execute over ssh. Then, even if the updian
+to limit the commands updian can execute over ssh. Then, even if the Updian
 server is compromised, the intruder can only do one thing with your other
 servers: Update them.
 
